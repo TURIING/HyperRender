@@ -8,8 +8,12 @@
 #ifndef ITOOL_H
 #define ITOOL_H
 
-class ITool {
-public:
+#include "Render.h"
 
+namespace HyperRender {
+class ITool : public RenderObject {
+public:
+	~ITool() = default;
 };
+}
 #endif //ITOOL_H

@@ -1,15 +1,18 @@
 /********************************************************************************
 * @author: TURIING
 * @email: turiing@163.com
-* @date: 2025/3/7 13:27
+* @date: 2025/3/8 13:21
 * @version: 1.0
 * @description: 
 ********************************************************************************/
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef IPASS_H
+#define IPASS_H
 
-#include <memory>
-#include <vector>
-#include <string>
+#include "Render.h"
 
-#endif //COMMON_H
+class IPass : public RenderObject {
+public:
+    virtual ~IPass() = default;
+
+};
+#endif //IPASS_H

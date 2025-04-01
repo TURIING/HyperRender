@@ -9,33 +9,31 @@
 #define TOOLFACTORY_H
 
 #include "ITool.h"
+#include "Render.h"
 #include "RenderType.h"
-#include <memory>
 
-namespace HyperGpu
-{
-    class GpuFactory;
-    class GpuDevice;
+namespace HyperGpu {
+class GpuFactory;
+class GpuDevice;
 }
 
-namespace HyperRender
-{
-    struct PlatformSurfaceInfo {
-        void *handle = nullptr;
-        // Size size;
-    };
+namespace HyperRender {
+class IScreenTool;
 
-    enum class ToolType { SCREEN_TOOL };
+struct PlatformSurfaceInfo {
+	void* handle = nullptr;
+	Size  size;
+};
 
-    class ToolFactory final {
-    public:
-        explicit ToolFactory(const PlatformSurfaceInfo &platformSurfaceInfo);
-        ~ToolFactory();
-        ITool *createTool(ToolType type);
+class ToolFactory final : public RenderObject {
+public:
+	explicit				   ToolFactory(const PlatformSurfaceInfo& platformSurfaceInfo);
+	~						   ToolFactory();
+	[[nodiscard]] IScreenTool* CreateScreenTool() const;
 
-    private:
-        HyperGpu::GpuFactory *m_pGpuFactory = nullptr;
-        std::unique_ptr<HyperGpu::GpuDevice> m_pGpuDevice = nullptr;
-    };
+private:
+	HyperGpu::GpuFactory* m_pGpuFactory = nullptr;
+	HyperGpu::GpuDevice*  m_pGpuDevice	= nullptr;
+};
 }
-#endif //TOOLFACTORY_H
+#endif // TOOLFACTORY_H
