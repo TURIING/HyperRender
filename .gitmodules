@@ -1,0 +1,3 @@
+[submodule "external/HyperGpu"]
+	path = external/HyperGpu
+	url = https://github.com/TURIING/HyperGpu

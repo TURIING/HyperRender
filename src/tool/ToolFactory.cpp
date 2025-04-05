@@ -7,7 +7,7 @@
 ********************************************************************************/
 #include "../../include/ToolFactory.h"
 
-#include "../../HyperGpu/include/GpuDevice.h"
+#include "GpuDevice.h"
 #include "ScreenTool.h"
 
 using namespace HyperGpu;
