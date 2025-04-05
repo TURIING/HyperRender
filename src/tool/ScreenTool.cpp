@@ -22,6 +22,8 @@ ScreenTool::ScreenTool(GpuDevice* gpuDevice) : m_pGpuDevice(gpuDevice) {
 		m_vecInFlightFence[i]			= m_pGpuDevice->GetSyncManager()->CreateFence();
 		m_vecCmd[i]						= m_pGpuDevice->GetCmdManager()->CreateCommandBuffer();
 	}
+
+	m_pSampler = gpuDevice->GetResourceManager()->CreateSampler({});
 }
 
 ScreenTool::~ScreenTool() {
@@ -37,24 +39,56 @@ ScreenTool::~ScreenTool() {
 		GpuSyncManager::DestroyFence(fence);
 	}
 
+	m_pBgTex->SubRef();
+	m_pSampler->SubRef();
+
 	m_pScreenPass->SubRef();
 	m_pGpuDevice->SubRef();
 }
 
+void ScreenTool::Begin(const BeginInfo& beginInfo) {
+	m_renderArea = beginInfo.renderArea;
+
+	Image2D::Image2DCreateInfo createInfo = {
+		.size = {std::bit_cast<HyperGpu::Size>(m_renderArea.size)},
+		.format = PixelFormat::R8G8B8A8,
+		.usage = Image2D::ImageUsage::Color,
+		.pSampler = m_pSampler
+	};
+	m_pBgTex = m_pGpuDevice->GetResourceManager()->CreateImage2D(createInfo);
+	m_pGpuDevice->GetCmdManager()->WithSingleCmdBuffer([&](GpuCmd* pCmd) {
+		pCmd->ClearColorImage(m_pBgTex, Color{1.0, 0.0, 0.0, 1.0});
+	});
+	m_pScreenPass->SetScreenTexture(m_pBgTex);
+}
+
 void ScreenTool::Draw() {
+	m_pScreenPass->UpdateResource();
+
 	uint32_t imageIndex = 0;
 	m_vecInFlightFence[m_currentFrameIndex]->Wait();
 	m_pSurface->AcquireNextImage(m_vecImageAvailableSemaphore[m_currentFrameIndex], imageIndex);
 	m_vecInFlightFence[m_currentFrameIndex]->Reset();
 
+	const auto viewport = Viewport{
+		.x = static_cast<float>(m_renderArea.offset.x),
+		.y = static_cast<float>(m_renderArea.offset.y),
+		.width = static_cast<float>(m_renderArea.size.width),
+		.height = static_cast<float>(m_renderArea.size.height),
+	};
+
 	GpuCmd::BeginRenderInfo beginRenderInfo{.pipeline			  = m_pScreenPass->GetPipeline(),
-											.viewport			  = {0, 0, 1000, 1000},
-											.scissor			  = {0, 0, 1000, 1000},
-											.clearValue			  = {ClearValue{.color = {0.0f, 0.0f, 0.0f, 1.0f}}},
-											.renderArea			  = {{0, 0}, {1000, 1000}},
-											.renderAttachmentType = GpuCmd::RenderAttachmentType::Surface,
-											.surface			  = m_pSurface};
-	GpuCmd::DrawInfo		drawInfo{.vertexBuffer = m_pScreenPass->GetVertexBuffer(), .vertexCount = 3};
+		.viewport = viewport,
+		.scissor = std::bit_cast<HyperGpu::Scissor>(m_renderArea),
+		.clearValue = {ClearValue{.color = {0.0f, 0.0f, 0.0f, 1.0f}}},
+		.renderArea = std::bit_cast<HyperGpu::Area>(m_renderArea),
+		.renderAttachmentType = GpuCmd::RenderAttachmentType::Surface,
+		.surface = m_pSurface
+	};
+	const GpuCmd::DrawInfo drawInfo{
+		.inputAssembler = m_pScreenPass->GetInputAssembler()
+	};
+
 	m_vecCmd[m_currentFrameIndex]->Begin(beginRenderInfo);
 	m_vecCmd[m_currentFrameIndex]->Draw(drawInfo);
 	m_vecCmd[m_currentFrameIndex]->End();

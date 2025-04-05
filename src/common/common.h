@@ -12,4 +12,6 @@
 #include <vector>
 #include <string>
 
+#include "RenderType.h"
+
 #endif //COMMON_H

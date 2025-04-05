@@ -9,12 +9,18 @@
 #define ISCREENTOOL_H
 
 #include "ITool.h"
+#include "RenderType.h"
 
 namespace HyperRender {
 class IScreenTool : public ITool {
 public:
-    virtual ~IScreenTool() = default;
-	virtual void Draw()		   = 0;
+	struct BeginInfo {
+		Area renderArea;
+	};
+
+public:
+	virtual void Begin(const BeginInfo& beginInfo) = 0;
+	virtual void Draw() = 0;
 };
 }
 #endif //ISCREENTOOL_H

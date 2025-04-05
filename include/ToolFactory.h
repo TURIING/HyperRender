@@ -27,8 +27,8 @@ struct PlatformSurfaceInfo {
 
 class ToolFactory final : public RenderObject {
 public:
-	explicit				   ToolFactory(const PlatformSurfaceInfo& platformSurfaceInfo);
-	~						   ToolFactory();
+	explicit ToolFactory(const PlatformSurfaceInfo& platformSurfaceInfo);
+	~ToolFactory() override;
 	[[nodiscard]] IScreenTool* CreateScreenTool() const;
 
 private:

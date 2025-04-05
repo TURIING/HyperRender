@@ -14,6 +14,8 @@
 class ScreenPass;
 
 namespace HyperGpu {
+class Sampler;
+class Image2D;
 class Semaphore;
 class Fence;
 class GpuCmd;
@@ -22,23 +24,26 @@ class GpuSurface;
 }
 
 using namespace HyperGpu;
-using namespace HyperRender;
 
-class ScreenTool final : public IScreenTool {
+class ScreenTool final : public HyperRender::IScreenTool {
 public:
 	explicit ScreenTool(GpuDevice* gpuDevice);
 	~		 ScreenTool() override;
-	void	 Draw() override;
+	void Begin(const BeginInfo& beginInfo) override;
+	void Draw() override;
 
 private:
-	GpuDevice*				m_pGpuDevice  = nullptr;
-	GpuSurface*				m_pSurface	  = nullptr;
-	ScreenPass*				m_pScreenPass = nullptr;
-	std::vector<GpuCmd*>	m_vecCmd{3};
+	GpuDevice*              m_pGpuDevice  = nullptr;
+	GpuSurface*             m_pSurface    = nullptr;
+	ScreenPass*             m_pScreenPass = nullptr;
+	std::vector<GpuCmd*>    m_vecCmd{3};
 	std::vector<Semaphore*> m_vecImageAvailableSemaphore{3};
 	std::vector<Semaphore*> m_vecRenderFinishedSemaphore{3};
-	std::vector<Fence*>		m_vecInFlightFence{3};
-	uint32_t				m_currentFrameIndex = 0;
+	std::vector<Fence*>     m_vecInFlightFence{3};
+	uint32_t                m_currentFrameIndex = 0;
+	HyperRender::Area       m_renderArea;
+	Image2D*                m_pBgTex   = nullptr;
+	Sampler*                m_pSampler = nullptr;
 };
 
 #endif // SCREENTOOL_H

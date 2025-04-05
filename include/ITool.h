@@ -13,7 +13,6 @@
 namespace HyperRender {
 class ITool : public RenderObject {
 public:
-	~ITool() = default;
 };
 }
 #endif //ITOOL_H

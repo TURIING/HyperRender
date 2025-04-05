@@ -31,11 +31,44 @@ ScreenPass::ScreenPass(GpuDevice* gpuDevice) : m_pGpuDevice(gpuDevice) {
 	envInfo.attachments = {HyperGpu::AttachmentInfo{HyperGpu::AttachmentType::COLOR, 0}};
 	m_pPipeline			= m_pGpuDevice->GetPipelineManager()->CreateRenderPipeline(envInfo);
 
-	m_pVertexBuffer = m_pGpuDevice->GetResourceManager()->CreateBuffer(Buffer::Vertex, reinterpret_cast<uint8_t*>(m_vertexData.data()), m_vertexData.size() * sizeof(float));
+	GpuResourceManager::BufferCreateInfo vertexBufferInfo = {
+		.bufferType = Buffer::Vertex,
+		.bufferSize = m_vertexData.size() * sizeof(float),
+		.data = reinterpret_cast<uint8_t*>(m_vertexData.data()),
+	};
+	GpuResourceManager::BufferCreateInfo indexBufferInfo = {
+		.bufferType = Buffer::Index,
+		.bufferSize = m_indices.size() * sizeof(uint32_t),
+		.data = reinterpret_cast<uint8_t*>(m_indices.data()),
+	};
+
+	m_pVertexBuffer  = m_pGpuDevice->GetResourceManager()->CreateBuffer(vertexBufferInfo);
+	m_pIndexBuffer   = m_pGpuDevice->GetResourceManager()->CreateBuffer(indexBufferInfo);
+	m_inputAssembler = {
+		.vertexBuffer = m_pVertexBuffer,
+		.indexBuffer = m_pIndexBuffer,
+		.vertexCount = 4,
+		.indexCount = 6,
+	};
 }
 
 ScreenPass::~ScreenPass() {
 	GpuResourceManager::DestroyBuffer(m_pVertexBuffer);
 	PipelineManager::DestroyPipeline(m_pPipeline);
 	GpuFactory::DestroyDevice(m_pGpuDevice);
+}
+
+void ScreenPass::SetScreenTexture(Image2D* screenTexture) {
+	m_pScreenTexture = screenTexture;
+	m_pScreenTexture->AddRef();
+	m_bImageDirty = true;
+}
+
+void ScreenPass::UpdateResource() {
+	if (m_bImageDirty) {
+		std::vector<Pipeline::ImageBindingInfo> bindingInfos;
+		bindingInfos.push_back({m_pScreenTexture, 1});
+		m_pPipeline->SetImages(bindingInfos.data(), bindingInfos.size());
+		m_bImageDirty = false;
+	}
 }

@@ -13,6 +13,8 @@
 
 class RenderObject {
 public:
+	virtual ~RenderObject() = default;
+
 	void AddRef() { m_refCount.fetch_add(1, std::memory_order_relaxed); }
 
 	void SubRef() {

@@ -25,10 +25,10 @@ HyperRender::ToolFactory::ToolFactory(const PlatformSurfaceInfo &platformSurface
 }
 
 HyperRender::ToolFactory::~ToolFactory() {
-	m_pGpuFactory->DestroyDevice(m_pGpuDevice);
+	GpuFactory::DestroyDevice(m_pGpuDevice);
 	m_pGpuFactory->SubRef();
 }
 
-IScreenTool* HyperRender::ToolFactory::CreateScreenTool() const {
+HyperRender::IScreenTool* HyperRender::ToolFactory::CreateScreenTool() const {
 	return new ScreenTool(m_pGpuDevice);
 }
