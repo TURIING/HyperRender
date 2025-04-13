@@ -8,6 +8,7 @@
 #ifndef SCREENTOOL_H
 #define SCREENTOOL_H
 
+#include "BaseTool.h"
 #include "../../include/IScreenTool.h"
 #include "../common/common.h"
 
@@ -25,7 +26,7 @@ class GpuSurface;
 
 using namespace HyperGpu;
 
-class ScreenTool final : public HyperRender::IScreenTool {
+class ScreenTool final : public HyperRender::IScreenTool, public BaseTool {
 public:
 	explicit ScreenTool(GpuDevice* gpuDevice);
 	~		 ScreenTool() override;
@@ -33,7 +34,6 @@ public:
 	void Draw() override;
 
 private:
-	GpuDevice*              m_pGpuDevice  = nullptr;
 	GpuSurface*             m_pSurface    = nullptr;
 	ScreenPass*             m_pScreenPass = nullptr;
 	std::vector<GpuCmd*>    m_vecCmd{3};
@@ -41,9 +41,6 @@ private:
 	std::vector<Semaphore*> m_vecRenderFinishedSemaphore{3};
 	std::vector<Fence*>     m_vecInFlightFence{3};
 	uint32_t                m_currentFrameIndex = 0;
-	HyperRender::Area       m_renderArea;
-	Image2D*                m_pBgTex   = nullptr;
-	Sampler*                m_pSampler = nullptr;
 };
 
 #endif // SCREENTOOL_H

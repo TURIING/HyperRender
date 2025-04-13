@@ -12,10 +12,11 @@
 #include "RenderType.h"
 
 namespace HyperRender {
-class IScreenTool : public ITool {
+class IScreenTool : virtual public ITool {
 public:
 	struct BeginInfo {
-		Area renderArea;
+		IDrawUnit* targetUnit = nullptr;
+		Area       renderArea;
 	};
 
 public:

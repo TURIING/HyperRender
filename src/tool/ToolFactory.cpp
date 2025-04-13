@@ -13,6 +13,8 @@
 using namespace HyperGpu;
 
 HyperRender::ToolFactory::ToolFactory(const PlatformSurfaceInfo &platformSurfaceInfo) {
+	Singleton<LogManager>::GetInstance()->Init();
+
     m_pGpuFactory = new GpuFactory(GpuFactory::VULKAN);
 	const DeviceCreateInfo deviceInfo{
 		.platformWindowInfo =

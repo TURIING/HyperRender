@@ -9,10 +9,14 @@
 #define ITOOL_H
 
 #include "Render.h"
+#include "IDrawUnit.h"
+#include "RenderType.h"
 
 namespace HyperRender {
-class ITool : public RenderObject {
-public:
-};
+    class ITool : public RenderObject {
+    public:
+        virtual void       ClearColor(IDrawUnit* targetUnit, Color color) = 0;
+        virtual IDrawUnit* CreateDrawUnit(const Area& area) = 0;
+    };
 }
 #endif //ITOOL_H

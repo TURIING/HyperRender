@@ -11,8 +11,7 @@
 
 #include "../pass/ScreenPass.h"
 
-ScreenTool::ScreenTool(GpuDevice* gpuDevice) : m_pGpuDevice(gpuDevice) {
-	m_pGpuDevice->AddRef();
+ScreenTool::ScreenTool(GpuDevice* gpuDevice) : BaseTool(gpuDevice) {
 	m_pScreenPass = new ScreenPass(gpuDevice);
 	m_pSurface	  = m_pGpuDevice->GetSurface(m_pScreenPass->GetPipeline());
 
@@ -22,8 +21,6 @@ ScreenTool::ScreenTool(GpuDevice* gpuDevice) : m_pGpuDevice(gpuDevice) {
 		m_vecInFlightFence[i]			= m_pGpuDevice->GetSyncManager()->CreateFence();
 		m_vecCmd[i]						= m_pGpuDevice->GetCmdManager()->CreateCommandBuffer();
 	}
-
-	m_pSampler = gpuDevice->GetResourceManager()->CreateSampler({});
 }
 
 ScreenTool::~ScreenTool() {
@@ -39,27 +36,14 @@ ScreenTool::~ScreenTool() {
 		GpuSyncManager::DestroyFence(fence);
 	}
 
-	m_pBgTex->SubRef();
-	m_pSampler->SubRef();
-
 	m_pScreenPass->SubRef();
-	m_pGpuDevice->SubRef();
 }
 
 void ScreenTool::Begin(const BeginInfo& beginInfo) {
 	m_renderArea = beginInfo.renderArea;
 
-	Image2D::Image2DCreateInfo createInfo = {
-		.size = {std::bit_cast<HyperGpu::Size>(m_renderArea.size)},
-		.format = PixelFormat::R8G8B8A8,
-		.usage = Image2D::ImageUsage::Color,
-		.pSampler = m_pSampler
-	};
-	m_pBgTex = m_pGpuDevice->GetResourceManager()->CreateImage2D(createInfo);
-	m_pGpuDevice->GetCmdManager()->WithSingleCmdBuffer([&](GpuCmd* pCmd) {
-		pCmd->ClearColorImage(m_pBgTex, Color{1.0, 0.0, 0.0, 1.0});
-	});
-	m_pScreenPass->SetScreenTexture(m_pBgTex);
+	auto unit = dynamic_cast<DrawUnit*>(beginInfo.targetUnit);
+	m_pScreenPass->SetScreenTexture(unit->GetImage());
 }
 
 void ScreenTool::Draw() {
@@ -77,7 +61,8 @@ void ScreenTool::Draw() {
 		.height = static_cast<float>(m_renderArea.size.height),
 	};
 
-	GpuCmd::BeginRenderInfo beginRenderInfo{.pipeline			  = m_pScreenPass->GetPipeline(),
+	GpuCmd::BeginRenderInfo beginRenderInfo{
+		.pipeline = m_pScreenPass->GetPipeline(),
 		.viewport = viewport,
 		.scissor = std::bit_cast<HyperGpu::Scissor>(m_renderArea),
 		.clearValue = {ClearValue{.color = {0.0f, 0.0f, 0.0f, 1.0f}}},

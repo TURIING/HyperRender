@@ -12,8 +12,13 @@
 #include "../shader/vulkan/ScreenPass/SCREEN_PASS_FRAG.h"
 #include "GpuPipeline.h"
 
-ScreenPass::ScreenPass(GpuDevice* gpuDevice) : m_pGpuDevice(gpuDevice) {
-	m_pGpuDevice->AddRef();
+ScreenPass::ScreenPass(GpuDevice* gpuDevice) : BasePass(gpuDevice) {
+	HyperGpu::AttachmentInfo attachment[] = {
+		{
+			.type = HyperGpu::AttachmentType::COLOR,
+			.index = 0
+		}
+	};
 
 	RenderEnvInfo envInfo;
 	envInfo.shaderInfo = HyperGpu::ShaderInfo{
@@ -28,47 +33,20 @@ ScreenPass::ScreenPass(GpuDevice* gpuDevice) : m_pGpuDevice(gpuDevice) {
 		.cullMode	   = HyperGpu::CullMode::BACK,
 		.polygonMode   = HyperGpu::PolygonMode::FILL,
 	};
-	envInfo.attachments = {HyperGpu::AttachmentInfo{HyperGpu::AttachmentType::COLOR, 0}};
-	m_pPipeline			= m_pGpuDevice->GetPipelineManager()->CreateRenderPipeline(envInfo);
+	envInfo.pAttachment     = attachment;
+	envInfo.attachmentCount = std::size(attachment);
+	m_pPipeline             = m_pGpuDevice->GetPipelineManager()->CreateRenderPipeline(envInfo);
 
-	GpuResourceManager::BufferCreateInfo vertexBufferInfo = {
-		.bufferType = Buffer::Vertex,
-		.bufferSize = m_vertexData.size() * sizeof(float),
-		.data = reinterpret_cast<uint8_t*>(m_vertexData.data()),
-	};
-	GpuResourceManager::BufferCreateInfo indexBufferInfo = {
-		.bufferType = Buffer::Index,
-		.bufferSize = m_indices.size() * sizeof(uint32_t),
-		.data = reinterpret_cast<uint8_t*>(m_indices.data()),
-	};
-
-	m_pVertexBuffer  = m_pGpuDevice->GetResourceManager()->CreateBuffer(vertexBufferInfo);
-	m_pIndexBuffer   = m_pGpuDevice->GetResourceManager()->CreateBuffer(indexBufferInfo);
-	m_inputAssembler = {
-		.vertexBuffer = m_pVertexBuffer,
-		.indexBuffer = m_pIndexBuffer,
-		.vertexCount = 4,
-		.indexCount = 6,
-	};
+	this->SetVertexBuffer(m_vertexData.size(), m_vertexData.size() * sizeof(Vertex),
+	                      reinterpret_cast<uint8_t*>(m_vertexData.data()));
+	this->SetIndexBuffer(m_indices.size(), m_indices.size() * sizeof(uint32_t),
+	                     reinterpret_cast<uint8_t*>(m_indices.data()));
+	this->InsertImageBinding("screenTexture", nullptr, 1);
 }
 
 ScreenPass::~ScreenPass() {
-	GpuResourceManager::DestroyBuffer(m_pVertexBuffer);
-	PipelineManager::DestroyPipeline(m_pPipeline);
-	GpuFactory::DestroyDevice(m_pGpuDevice);
 }
 
 void ScreenPass::SetScreenTexture(Image2D* screenTexture) {
-	m_pScreenTexture = screenTexture;
-	m_pScreenTexture->AddRef();
-	m_bImageDirty = true;
-}
-
-void ScreenPass::UpdateResource() {
-	if (m_bImageDirty) {
-		std::vector<Pipeline::ImageBindingInfo> bindingInfos;
-		bindingInfos.push_back({m_pScreenTexture, 1});
-		m_pPipeline->SetImages(bindingInfos.data(), bindingInfos.size());
-		m_bImageDirty = false;
-	}
+	this->UpdateImageBinding("screenTexture", screenTexture);
 }
