@@ -11,9 +11,11 @@
 #include "Render.h"
 #include "RenderType.h"
 
-class IDrawUnit : public RenderObject {
-public:
-	virtual ~IDrawUnit() = default;
-    [[nodiscard]] virtual HyperRender::Area GetArea() const = 0;
-};
+namespace HyperRender {
+    class IDrawUnit : public RenderObject {
+    public:
+        [[nodiscard]] virtual HyperRender::Area GetArea() const = 0;
+    };
+
+}
 #endif // IDRAWUNIT_H

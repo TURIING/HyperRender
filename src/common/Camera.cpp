@@ -6,6 +6,7 @@
 * @description: 
 ********************************************************************************/
 #include "Camera.h"
+USING_RENDER_NAMESPACE_BEGIN
 
 Camera::Camera() {
     this->SetLookAt(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -22,3 +23,5 @@ void Camera::SetOrtho(float left, float right, float bottom, float top, float ne
 void Camera::SetFrustum(float left, float right, float bottom, float top, float near, float far) {
     m_projection = glm::frustumRH_ZO(left, right, bottom, top, near, far);
 }
+
+USING_RENDER_NAMESPACE_END

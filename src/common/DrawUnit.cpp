@@ -6,13 +6,14 @@
 * @description: 
 ********************************************************************************/
 #include "DrawUnit.h"
+USING_RENDER_NAMESPACE_BEGIN
 
 DrawUnit::DrawUnit(HyperGpu::GpuDevice* pGpuDevice, const DrawUnitCreateInfo &info): m_area(info.area) {
     HyperGpu::Image2D::Image2DCreateInfo createInfo {
         .size = std::bit_cast<HyperGpu::Size>(info.area.size),
         .pSampler = info.pSampler,
         .usage = HyperGpu::Image2D::ImageUsage::Color,
-        .format = HyperGpu::PixelFormat::R8G8B8A8
+        .format = HyperGpu::PixelFormat::B8G8R8A8
     };
     m_pImage2D = pGpuDevice->GetResourceManager()->CreateImage2D(createInfo);
 }
@@ -20,3 +21,5 @@ DrawUnit::DrawUnit(HyperGpu::GpuDevice* pGpuDevice, const DrawUnitCreateInfo &in
 DrawUnit::~DrawUnit() {
     m_pImage2D->SubRef();
 }
+
+USING_RENDER_NAMESPACE_END

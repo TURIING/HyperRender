@@ -12,6 +12,8 @@
 #include "HyperGpu.h"
 #include "../common/common.h"
 
+USING_RENDER_NAMESPACE_BEGIN
+
 class Camera;
 class BasePass : public RenderObject {
 	struct GlobalInfo {
@@ -30,10 +32,13 @@ public:
 	void InsertBufferBinding(const std::string &name, HyperGpu::Buffer* buffer);
 	void SetVertexBuffer(uint32_t vertexCount, uint64_t bufferSize, uint8_t* data);
 	void SetIndexBuffer(uint32_t indexCount, uint64_t bufferSize, uint8_t* data);
+    [[nodiscard]] HyperGpu::Pipeline* GetPipeline() const { return m_pPipeline; }
+	virtual void UpdateSize(const HyperRender::Size &size) { m_size = size; };
 
 protected:
 	HyperGpu::GpuDevice*	 m_pGpuDevice = nullptr;
     HyperGpu::Pipeline*      m_pPipeline     = nullptr;
+	HyperRender::Size		 m_size;
 
 private:
 	HyperGpu::InputAssembler m_inputAssembler;
@@ -48,4 +53,5 @@ private:
 	HyperGpu::Buffer* m_pGlobalBuffer = nullptr;
 };
 
+USING_RENDER_NAMESPACE_END
 #endif //BASE_PASS_H

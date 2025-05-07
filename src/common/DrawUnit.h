@@ -12,7 +12,9 @@
 #include "HyperGpu.h"
 #include "common.h"
 
-class DrawUnit final: public RenderObject, public IDrawUnit {
+USING_RENDER_NAMESPACE_BEGIN
+
+class DrawUnit final: public IDrawUnit {
 public:
     struct DrawUnitCreateInfo {
         HyperRender::Area area;
@@ -30,6 +32,6 @@ private:
     HyperRender::Area m_area;
 };
 
-
+USING_RENDER_NAMESPACE_END
 
 #endif //DRAWUNIT_H

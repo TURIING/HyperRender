@@ -10,6 +10,8 @@
 
 #include "common.h"
 
+USING_RENDER_NAMESPACE_BEGIN
+
 class Camera final : public RenderObject {
 public:
     Camera();
@@ -24,4 +26,5 @@ private:
     glm::mat4 m_projection = glm::mat4(1.0f);
 };
 
+USING_RENDER_NAMESPACE_END
 #endif //CAMERA_H

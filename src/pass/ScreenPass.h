@@ -21,6 +21,8 @@ namespace HyperGpu
 
 using namespace HyperGpu;
 
+USING_RENDER_NAMESPACE_BEGIN
+
 class ScreenPass : public BasePass {
     struct Vertex {
         glm::vec2 aPos;
@@ -30,7 +32,6 @@ class ScreenPass : public BasePass {
 public:
     explicit ScreenPass(GpuDevice* gpuDevice);
 	~ScreenPass() override;
-    [[nodiscard]] Pipeline* GetPipeline() const { return m_pPipeline; }
     void                    SetScreenTexture(Image2D* screenTexture);
 
 private:
@@ -47,6 +48,6 @@ private:
     };
 };
 
-
+USING_RENDER_NAMESPACE_END
 
 #endif //SCREENPASS_H

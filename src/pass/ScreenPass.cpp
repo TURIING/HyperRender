@@ -12,11 +12,14 @@
 #include "../shader/vulkan/ScreenPass/SCREEN_PASS_FRAG.h"
 #include "GpuPipeline.h"
 
+USING_RENDER_NAMESPACE_BEGIN
+
 ScreenPass::ScreenPass(GpuDevice* gpuDevice) : BasePass(gpuDevice) {
 	HyperGpu::AttachmentInfo attachment[] = {
 		{
 			.type = HyperGpu::AttachmentType::COLOR,
-			.index = 0
+			.index = 0,
+			.format = HyperGpu::PixelFormat::R8G8B8A8
 		}
 	};
 
@@ -50,3 +53,5 @@ ScreenPass::~ScreenPass() {
 void ScreenPass::SetScreenTexture(Image2D* screenTexture) {
 	this->UpdateImageBinding("screenTexture", screenTexture);
 }
+
+USING_RENDER_NAMESPACE_END

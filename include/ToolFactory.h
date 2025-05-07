@@ -12,6 +12,11 @@
 #include "Render.h"
 #include "RenderType.h"
 
+namespace HyperRender
+{
+	class IEffectTool;
+}
+
 namespace HyperGpu {
 class GpuFactory;
 class GpuDevice;
@@ -20,16 +25,12 @@ class GpuDevice;
 namespace HyperRender {
 class IScreenTool;
 
-struct PlatformSurfaceInfo {
-	void* handle = nullptr;
-	Size  size;
-};
-
 class ToolFactory final : public RenderObject {
 public:
-	explicit ToolFactory(const PlatformSurfaceInfo& platformSurfaceInfo);
+	explicit ToolFactory();
 	~ToolFactory() override;
 	[[nodiscard]] IScreenTool* CreateScreenTool() const;
+	[[nodiscard]] IEffectTool* CreateEffectTool() const;
 
 private:
 	HyperGpu::GpuFactory* m_pGpuFactory = nullptr;

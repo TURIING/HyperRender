@@ -12,6 +12,8 @@
 #include "../BasePass.h"
 #include "HyperGpu.h"
 
+USING_RENDER_NAMESPACE_BEGIN
+
 class RoundCornerPass final : public BasePass {
     struct Vertex {
         glm::vec2 aPos;
@@ -24,11 +26,14 @@ class RoundCornerPass final : public BasePass {
 public:
     explicit RoundCornerPass(HyperGpu::GpuDevice* pGpuDevice);
     ~RoundCornerPass() override;
-    void SetScreenTexture(HyperGpu::Image2D* screenTexture);
+    void SetScreenTexture(IDrawUnit* screenTexture);
+    void UpdateSize(const HyperRender::Size& size) override;
 
 private:
     HyperGpu::Buffer*   m_pVertexBuffer = nullptr;
     HyperGpu::Buffer*   m_pIndexBuffer  = nullptr;
+
+private:
     HyperGpu::Buffer*   m_pLocalBuffer  = nullptr;
     LocalInfo           m_localInfo{};
     std::vector<Vertex> m_vertexData = {
@@ -43,5 +48,7 @@ private:
         2, 3, 0  // 第二个三角形（右上 - 左上 - 左下）
     };
 };
+
+USING_RENDER_NAMESPACE_END
 
 #endif //ROUNDCORNERPASS_H

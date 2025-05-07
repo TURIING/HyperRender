@@ -8,6 +8,8 @@
 #include "BasePass.h"
 #include "../common/Camera.h"
 
+USING_RENDER_NAMESPACE_BEGIN
+
 BasePass::BasePass(HyperGpu::GpuDevice* pGpuDevice) : m_pGpuDevice(pGpuDevice) {
 	m_pGpuDevice->AddRef();
 	m_pGlobalBuffer = m_pGpuDevice->GetResourceManager()->CreateBuffer({
@@ -111,3 +113,5 @@ void BasePass::SetIndexBuffer(uint32_t indexCount, uint64_t bufferSize, uint8_t*
 	m_inputAssembler.indexBuffer = m_pIndexBuffer;
 	m_inputAssembler.indexCount = indexCount;
 }
+
+USING_RENDER_NAMESPACE_END

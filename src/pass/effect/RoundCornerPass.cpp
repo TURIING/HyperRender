@@ -9,6 +9,8 @@
 #include "../../shader/vulkan/RoundCornerPass/ROUND_CORNER_PASS_FRAG.h"
 #include "../../shader/vulkan/RoundCornerPass/ROUND_CORNER_PASS_VERT.h"
 
+USING_RENDER_NAMESPACE_BEGIN
+
 RoundCornerPass::RoundCornerPass(HyperGpu::GpuDevice* pGpuDevice): BasePass(pGpuDevice) {
     HyperGpu::AttachmentInfo attachment[] = {
         {
@@ -36,7 +38,7 @@ RoundCornerPass::RoundCornerPass(HyperGpu::GpuDevice* pGpuDevice): BasePass(pGpu
 
     HyperGpu::GpuResourceManager::BufferCreateInfo bufferCreateInfo{
         .bufferType = HyperGpu::Buffer::Uniform,
-        .binding = 0,
+        .binding = 2,
         .bufferSize = sizeof(LocalInfo),
         .data = reinterpret_cast<uint8_t*>(&m_localInfo)
     };
@@ -49,6 +51,15 @@ RoundCornerPass::RoundCornerPass(HyperGpu::GpuDevice* pGpuDevice): BasePass(pGpu
 RoundCornerPass::~RoundCornerPass() {
 }
 
-void RoundCornerPass::SetScreenTexture(HyperGpu::Image2D* screenTexture) {
-    this->UpdateImageBinding("targetTexture", screenTexture);
+void RoundCornerPass::SetScreenTexture(IDrawUnit* screenTexture) {
+    const auto unit = dynamic_cast<DrawUnit*>(screenTexture);
+    this->UpdateImageBinding("targetTexture", unit->GetImage());
 }
+
+void RoundCornerPass::UpdateSize(const HyperRender::Size& size) {
+    BasePass::UpdateSize(size);
+    m_localInfo.resolution = { size.width, size.height };
+    m_pLocalBuffer->UpdateData(reinterpret_cast<uint8_t*>(&m_localInfo), sizeof(LocalInfo));
+}
+
+USING_RENDER_NAMESPACE_END

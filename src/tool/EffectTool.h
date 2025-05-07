@@ -12,8 +12,10 @@
 #include "IEffectTool.h"
 #include "HyperGpu.h"
 
+USING_RENDER_NAMESPACE_BEGIN
+
 class RoundCornerPass;
-class EffectTool final : public HyperRender::IEffectTool, public BaseTool {
+class EffectTool final : public IEffectTool, public BaseTool {
 public:
 	explicit EffectTool(HyperGpu::GpuDevice* pGpuDevice);
 	~EffectTool() override;
@@ -23,9 +25,7 @@ public:
 
 private:
 	RoundCornerPass* m_pRoundCornerPass = nullptr;
-	HyperGpu::Semaphore* m_pImageAvailableSemaphore = nullptr;
-	HyperGpu::Semaphore* m_pRenderFinishedSemaphore = nullptr;
-	HyperGpu::Fence* m_pInFlightFence = nullptr;
 };
 
+USING_RENDER_NAMESPACE_END
 #endif // EFFECTTOOL_H

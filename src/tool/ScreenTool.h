@@ -24,23 +24,29 @@ class GpuDevice;
 class GpuSurface;
 }
 
-using namespace HyperGpu;
+USING_RENDER_NAMESPACE_BEGIN
+class ScreenWindowTarget;
 
-class ScreenTool final : public HyperRender::IScreenTool, public BaseTool {
+class ScreenTool final : public IScreenTool, public BaseTool {
 public:
-	explicit ScreenTool(GpuDevice* gpuDevice);
-	~		 ScreenTool() override;
-	void Begin(const BeginInfo& beginInfo) override;
-	void Draw() override;
+    explicit ScreenTool(HyperGpu::GpuDevice *gpuDevice);
+    ~ ScreenTool() override;
+    IScreenTarget *CreateScreen(const HyperRender::PlatformWindowInfo &platformSurfaceInfo) override;
+
+    void SetScreenTarget(IScreenTarget *target) override;
+    void BeginRenderToScreen(const Area &updateArea) override;
+    void EndRenderToScreen() override;
 
 private:
-	GpuSurface*             m_pSurface    = nullptr;
-	ScreenPass*             m_pScreenPass = nullptr;
-	std::vector<GpuCmd*>    m_vecCmd{3};
-	std::vector<Semaphore*> m_vecImageAvailableSemaphore{3};
-	std::vector<Semaphore*> m_vecRenderFinishedSemaphore{3};
-	std::vector<Fence*>     m_vecInFlightFence{3};
-	uint32_t                m_currentFrameIndex = 0;
+    void renderToScreen();
+
+private:
+    HyperGpu::GpuSurface *m_pSurface = nullptr;
+    ScreenWindowTarget* m_pScreenTarget = nullptr;
+    HyperGpu::Semaphore* m_pRenderSemaphore = nullptr;
+    DrawUnit* m_pScreenTexture = nullptr;
 };
+
+USING_RENDER_NAMESPACE_END
 
 #endif // SCREENTOOL_H

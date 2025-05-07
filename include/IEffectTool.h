@@ -13,7 +13,7 @@
 #include "RenderType.h"
 
 namespace HyperRender {
-class IEffectTool : public ITool {
+class IEffectTool : virtual public ITool {
 public:
 	struct BeginInfo {
 		IDrawUnit* targetUnit = nullptr;	// 施加效果的DrawUnit

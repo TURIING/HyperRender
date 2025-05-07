@@ -7,21 +7,25 @@
 ********************************************************************************/
 #include "../../include/ToolFactory.h"
 
+#include "EffectTool.h"
 #include "GpuDevice.h"
 #include "ScreenTool.h"
 
 using namespace HyperGpu;
 
-HyperRender::ToolFactory::ToolFactory(const PlatformSurfaceInfo &platformSurfaceInfo) {
+HyperRender::ToolFactory::ToolFactory() {
 	Singleton<LogManager>::GetInstance()->Init();
 
     m_pGpuFactory = new GpuFactory(GpuFactory::VULKAN);
+
+	QueueInfo queueInfos[] = {
+		{ QueueType::Graphics, 1.0 },
+		{ QueueType::Present, 0.8 }
+	};
+
 	const DeviceCreateInfo deviceInfo{
-		.platformWindowInfo =
-			{
-				.handle = platformSurfaceInfo.handle,
-				.size	= {platformSurfaceInfo.size.width, platformSurfaceInfo.size.height},
-			},
+		.pQueueInfo = queueInfos,
+		.queueInfoCount = std::size(queueInfos)
 	};
 	m_pGpuDevice = m_pGpuFactory->CreateDevice(deviceInfo);
 }
@@ -33,4 +37,8 @@ HyperRender::ToolFactory::~ToolFactory() {
 
 HyperRender::IScreenTool* HyperRender::ToolFactory::CreateScreenTool() const {
 	return new ScreenTool(m_pGpuDevice);
+}
+
+HyperRender::IEffectTool* HyperRender::ToolFactory::CreateEffectTool() const {
+	return new EffectTool(m_pGpuDevice);
 }

@@ -45,6 +45,12 @@ namespace HyperRender
 		float b = 0;
 		float a = 0;
 	};
+
+    constexpr Color White = Color(1.0, 1.0, 1.0, 1.0);
+    constexpr Color Red = Color(1.0, 0.0, 0.0, 1.0);
+    constexpr Color Black = Color(0.0, 0.0, 0.0, 1.0);
+	constexpr Color Green = Color(0.0, 1.0, 0.0, 1.0);
+	constexpr Color Blue = Color(0.0, 0.0, 1.0, 1.0);
 }
 
 #endif //RENDERTYPE_H
