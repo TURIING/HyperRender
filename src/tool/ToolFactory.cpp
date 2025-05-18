@@ -16,7 +16,7 @@ using namespace HyperGpu;
 HyperRender::ToolFactory::ToolFactory() {
 	Singleton<LogManager>::GetInstance()->Init();
 
-    m_pGpuFactory = new GpuFactory(GpuFactory::VULKAN);
+    m_pGpuFactory = new GpuFactory(GpuFactory::OPENGL);
 
 	QueueInfo queueInfos[] = {
 		{ QueueType::Graphics, 1.0 },

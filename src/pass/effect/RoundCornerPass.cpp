@@ -15,7 +15,8 @@ RoundCornerPass::RoundCornerPass(HyperGpu::GpuDevice* pGpuDevice): BasePass(pGpu
     HyperGpu::AttachmentInfo attachment[] = {
         {
             .type = HyperGpu::AttachmentType::COLOR,
-            .index = 0
+            .index = 0,
+            .format = HyperGpu::PixelFormat::R8G8B8A8
         }
     };
 
@@ -36,7 +37,7 @@ RoundCornerPass::RoundCornerPass(HyperGpu::GpuDevice* pGpuDevice): BasePass(pGpu
     this->SetIndexBuffer(m_indices.size(), m_indices.size() * sizeof(uint32_t),
                          reinterpret_cast<uint8_t*>(m_indices.data()));
 
-    HyperGpu::GpuResourceManager::BufferCreateInfo bufferCreateInfo{
+    HyperGpu::Buffer::BufferCreateInfo bufferCreateInfo{
         .bufferType = HyperGpu::Buffer::Uniform,
         .binding = 2,
         .bufferSize = sizeof(LocalInfo),

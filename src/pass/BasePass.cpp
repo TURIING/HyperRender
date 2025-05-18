@@ -91,7 +91,7 @@ void BasePass::InsertBufferBinding(const std::string& name, HyperGpu::Buffer* bu
 }
 
 void BasePass::SetVertexBuffer(uint32_t vertexCount, uint64_t bufferSize, uint8_t* data){
-	HyperGpu::GpuResourceManager::BufferCreateInfo vertexBufferInfo = {
+	HyperGpu::Buffer::BufferCreateInfo vertexBufferInfo = {
 		.bufferType = HyperGpu::Buffer::Vertex,
 		.bufferSize = bufferSize,
 		.data = data,
@@ -103,7 +103,7 @@ void BasePass::SetVertexBuffer(uint32_t vertexCount, uint64_t bufferSize, uint8_
 }
 
 void BasePass::SetIndexBuffer(uint32_t indexCount, uint64_t bufferSize, uint8_t* data){
-	HyperGpu::GpuResourceManager::BufferCreateInfo indexBufferInfo = {
+	HyperGpu::Buffer::BufferCreateInfo indexBufferInfo = {
 		.bufferType = HyperGpu::Buffer::Index,
 		.bufferSize = bufferSize,
 		.data = data,

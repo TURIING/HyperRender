@@ -13,7 +13,7 @@ DrawUnit::DrawUnit(HyperGpu::GpuDevice* pGpuDevice, const DrawUnitCreateInfo &in
         .size = std::bit_cast<HyperGpu::Size>(info.area.size),
         .pSampler = info.pSampler,
         .usage = HyperGpu::Image2D::ImageUsage::Color,
-        .format = HyperGpu::PixelFormat::B8G8R8A8
+        .format = HyperGpu::PixelFormat::R8G8B8A8
     };
     m_pImage2D = pGpuDevice->GetResourceManager()->CreateImage2D(createInfo);
 }

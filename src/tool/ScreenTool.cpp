@@ -32,13 +32,13 @@ void ScreenTool::SetScreenTarget(IScreenTarget* target) {
 }
 
 void ScreenTool::BeginRenderToScreen(const Area& updateArea) {
-    m_renderArea     = updateArea;
+    m_renderArea = updateArea;
     if (!m_pScreenTexture) {
         m_pScreenTexture = this->CreateDrawUnit(updateArea);
     }
     m_pCmd->Reset();
     begin();
-    this->clearColor(m_pCmd, m_pScreenTexture, Green);
+    this->clearColor(m_pCmd, m_pScreenTexture, Red);
 }
 
 void ScreenTool::EndRenderToScreen() {

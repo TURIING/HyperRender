@@ -27,7 +27,7 @@ void ScreenWindowTarget::RenderToScreen(const DrawToTargetInfo& info) {
         .srcArea = std::bit_cast<HyperGpu::Area>(info.srcArea),
         .dstArea = std::bit_cast<HyperGpu::Area>(info.dstArea)
     };
-    m_pCmd->BlitImageToSurface(info.pImage, m_pSurface, range, HyperGpu::Filter::LINEAR);
+    m_pCmd->BlitImageToSurface(info.pImage, m_pSurface, &range, 1, HyperGpu::Filter::LINEAR);
     m_pCmd->End();
 
     std::vector<HyperGpu::Semaphore*> waitSemaphore;

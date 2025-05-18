@@ -61,7 +61,7 @@ void BaseTool::SubmitCmd(const std::vector<HyperGpu::GpuCmd*>&    cmds,
     m_pRenderQueue->Submit(info);
 }
 
-void BaseTool::clearColor(HyperGpu::GpuCmd* pCmd, IDrawUnit* targetUnit, HyperRender::Color color) {
+void BaseTool::clearColor(HyperGpu::GpuCmd* pCmd, IDrawUnit* targetUnit, Color color) {
     pCmd->ClearColorImage(dynamic_cast<DrawUnit*>(targetUnit)->GetImage(), std::bit_cast<HyperGpu::Color>(color));
 }
 
