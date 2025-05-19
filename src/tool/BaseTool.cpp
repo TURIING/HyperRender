@@ -35,7 +35,9 @@ DrawUnit* BaseTool::CreateDrawUnit(const Area& area) {
 }
 
 void BaseTool::begin() const {
+    m_pRenderFence->Wait();
     m_pRenderFence->Reset();
+    m_pCmd->Reset();
     m_pCmd->Begin();
 }
 

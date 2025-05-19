@@ -11,34 +11,36 @@
 #include "GpuDevice.h"
 #include "ScreenTool.h"
 
-using namespace HyperGpu;
+USING_RENDER_NAMESPACE_BEGIN
 
-HyperRender::ToolFactory::ToolFactory() {
+ToolFactory::ToolFactory(GpuType type) {
 	Singleton<LogManager>::GetInstance()->Init();
 
-    m_pGpuFactory = new GpuFactory(GpuFactory::OPENGL);
+    m_pGpuFactory = new HyperGpu::GpuFactory(static_cast<HyperGpu::GpuFactory::GpuType>(type));
 
-	QueueInfo queueInfos[] = {
-		{ QueueType::Graphics, 1.0 },
-		{ QueueType::Present, 0.8 }
+	HyperGpu::QueueInfo queueInfos[] = {
+		{ HyperGpu::QueueType::Graphics, 1.0 },
+		{ HyperGpu::QueueType::Present, 0.8 }
 	};
 
-	const DeviceCreateInfo deviceInfo{
+	const HyperGpu::DeviceCreateInfo deviceInfo{
 		.pQueueInfo = queueInfos,
 		.queueInfoCount = std::size(queueInfos)
 	};
 	m_pGpuDevice = m_pGpuFactory->CreateDevice(deviceInfo);
 }
 
-HyperRender::ToolFactory::~ToolFactory() {
-	GpuFactory::DestroyDevice(m_pGpuDevice);
+ToolFactory::~ToolFactory() {
+	HyperGpu::GpuFactory::DestroyDevice(m_pGpuDevice);
 	m_pGpuFactory->SubRef();
 }
 
-HyperRender::IScreenTool* HyperRender::ToolFactory::CreateScreenTool() const {
+IScreenTool* ToolFactory::CreateScreenTool() const {
 	return new ScreenTool(m_pGpuDevice);
 }
 
-HyperRender::IEffectTool* HyperRender::ToolFactory::CreateEffectTool() const {
+IEffectTool* ToolFactory::CreateEffectTool() const {
 	return new EffectTool(m_pGpuDevice);
 }
+
+USING_RENDER_NAMESPACE_END

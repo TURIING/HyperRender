@@ -12,11 +12,6 @@
 #include "Render.h"
 #include "RenderType.h"
 
-namespace HyperRender
-{
-	class IEffectTool;
-}
-
 namespace HyperGpu {
 class GpuFactory;
 class GpuDevice;
@@ -24,10 +19,13 @@ class GpuDevice;
 
 namespace HyperRender {
 class IScreenTool;
+class IEffectTool;
+
+enum class GpuType { OPENGL, VULKAN };
 
 class ToolFactory final : public RenderObject {
 public:
-	explicit ToolFactory();
+	explicit ToolFactory(GpuType type);
 	~ToolFactory() override;
 	[[nodiscard]] IScreenTool* CreateScreenTool() const;
 	[[nodiscard]] IEffectTool* CreateEffectTool() const;

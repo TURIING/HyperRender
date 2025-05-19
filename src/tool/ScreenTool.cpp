@@ -36,9 +36,10 @@ void ScreenTool::BeginRenderToScreen(const Area& updateArea) {
     if (!m_pScreenTexture) {
         m_pScreenTexture = this->CreateDrawUnit(updateArea);
     }
-    m_pCmd->Reset();
     begin();
-    this->clearColor(m_pCmd, m_pScreenTexture, Red);
+    static bool a = true;
+    this->clearColor(m_pCmd, m_pScreenTexture, a ? Red: Blue);
+    a = !a;
 }
 
 void ScreenTool::EndRenderToScreen() {
