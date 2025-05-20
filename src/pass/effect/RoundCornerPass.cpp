@@ -22,10 +22,10 @@ RoundCornerPass::RoundCornerPass(HyperGpu::GpuDevice* pGpuDevice): BasePass(pGpu
 
     HyperGpu::RenderEnvInfo envInfo{
         .shaderInfo = {
-            .spvVertexCodeSize = ROUND_CORNER_PASS_VERT.size(),
             .pSpvVertexCode = ROUND_CORNER_PASS_VERT.data(),
+            .spvVertexCodeSize = ROUND_CORNER_PASS_VERT.size(),
+            .pSpvFragCode = ROUND_CORNER_PASS_FRAG.data(),
             .spvFragCodeSize = ROUND_CORNER_PASS_FRAG.size(),
-            .pSpvFragCode = ROUND_CORNER_PASS_FRAG.data()
         },
         .pAttachment = attachment,
         .attachmentCount = std::size(attachment),
@@ -39,9 +39,9 @@ RoundCornerPass::RoundCornerPass(HyperGpu::GpuDevice* pGpuDevice): BasePass(pGpu
 
     HyperGpu::Buffer::BufferCreateInfo bufferCreateInfo{
         .bufferType = HyperGpu::Buffer::Uniform,
-        .binding = 2,
         .bufferSize = sizeof(LocalInfo),
-        .data = reinterpret_cast<uint8_t*>(&m_localInfo)
+        .data = reinterpret_cast<uint8_t*>(&m_localInfo),
+        .binding = 2,
     };
     m_pLocalBuffer = m_pGpuDevice->GetResourceManager()->CreateBuffer(bufferCreateInfo);
 

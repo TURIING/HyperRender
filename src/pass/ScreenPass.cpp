@@ -25,16 +25,16 @@ ScreenPass::ScreenPass(GpuDevice* gpuDevice) : BasePass(gpuDevice) {
 
 	RenderEnvInfo envInfo;
 	envInfo.shaderInfo = HyperGpu::ShaderInfo{
-		.spvVertexCodeSize = SCREEN_PASS_VERT.size(),
 		.pSpvVertexCode	   = SCREEN_PASS_VERT.data(),
-		.spvFragCodeSize = SCREEN_PASS_FRAG.size(),
+		.spvVertexCodeSize = SCREEN_PASS_VERT.size(),
 		.pSpvFragCode	   = SCREEN_PASS_FRAG.data(),
+		.spvFragCodeSize = SCREEN_PASS_FRAG.size(),
 	};
 	envInfo.rasterInfo = HyperGpu::RasterizationInfo{
 		.primitiveType = HyperGpu::PrimitiveType::TRIANGLE,
-		.frontFace	   = HyperGpu::FrontFace::CLOCK_WISE,
-		.cullMode	   = HyperGpu::CullMode::BACK,
 		.polygonMode   = HyperGpu::PolygonMode::FILL,
+		.cullMode	   = HyperGpu::CullMode::BACK,
+		.frontFace	   = HyperGpu::FrontFace::CLOCK_WISE,
 	};
 	envInfo.pAttachment     = attachment;
 	envInfo.attachmentCount = std::size(attachment);
