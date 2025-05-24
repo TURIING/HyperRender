@@ -14,3 +14,10 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME} PUBLIC HyperGpu)
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "YES"
+        XCODE_ATTRIBUTE_CODE_SIGN_STYLE "Automatic"
+        XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development"
+#        XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ""
+        XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY "YES"
+)

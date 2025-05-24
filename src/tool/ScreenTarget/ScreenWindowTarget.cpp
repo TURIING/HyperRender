@@ -21,7 +21,7 @@ void ScreenWindowTarget::RenderToScreen(const DrawToTargetInfo& info) {
     uint32_t imageIndex = 0;
     auto imageAvailableSemaphore = m_pSurface->AcquireNextImage(imageIndex);
     m_pScreenFence->Reset();
-
+    
     m_pCmd->Begin();
     HyperGpu::ImageBlitRange range {
         .srcArea = std::bit_cast<HyperGpu::Area>(info.srcArea),
@@ -39,7 +39,7 @@ void ScreenWindowTarget::RenderToScreen(const DrawToTargetInfo& info) {
     HyperGpu::Queue::SubmitInfo submitInfo {
         .pWaitSemaphores = waitSemaphore.data(),
         .waitSemaphoreCount = TO_U32(waitSemaphore.size()),
-        .pSignalSemaphores = &m_pScreenSemaphore,
+        .pSignalSemaphores = &m_vecScreenSemaphore[imageIndex],
         .signalSemaphoreCount = 1,
         .pFence = m_pScreenFence,
         .pCmd = &m_pCmd,
@@ -48,7 +48,7 @@ void ScreenWindowTarget::RenderToScreen(const DrawToTargetInfo& info) {
     m_pPresentQueue->Submit(submitInfo);
 
     HyperGpu::Queue::PresentInfo presentInfo {
-        .pWaitSemaphores = &m_pScreenSemaphore,
+        .pWaitSemaphores = &m_vecScreenSemaphore[imageIndex],
         .waitSemaphoreCount = 1,
         .pSurface = m_pSurface,
         .imageIndex = &imageIndex,
