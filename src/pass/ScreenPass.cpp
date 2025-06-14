@@ -7,14 +7,13 @@
 ********************************************************************************/
 #include "ScreenPass.h"
 
-#include <GpuDevice.h>
 #include "../shader/vulkan/ScreenPass/SCREEN_PASS_VERT.h"
 #include "../shader/vulkan/ScreenPass/SCREEN_PASS_FRAG.h"
 #include "GpuPipeline.h"
 
 USING_RENDER_NAMESPACE_BEGIN
 
-ScreenPass::ScreenPass(GpuDevice* gpuDevice) : BasePass(gpuDevice) {
+ScreenPass::ScreenPass(HyperGpu::GpuDevice* gpuDevice) : BasePass(gpuDevice) {
 	HyperGpu::AttachmentInfo attachment[] = {
 		{
 			.type = HyperGpu::AttachmentType::COLOR,
@@ -23,7 +22,7 @@ ScreenPass::ScreenPass(GpuDevice* gpuDevice) : BasePass(gpuDevice) {
 		}
 	};
 
-	RenderEnvInfo envInfo;
+	HyperGpu::RenderEnvInfo envInfo;
 	envInfo.shaderInfo = HyperGpu::ShaderInfo{
 		.pSpvVertexCode	   = SCREEN_PASS_VERT.data(),
 		.spvVertexCodeSize = SCREEN_PASS_VERT.size(),
@@ -39,18 +38,12 @@ ScreenPass::ScreenPass(GpuDevice* gpuDevice) : BasePass(gpuDevice) {
 	envInfo.pAttachment     = attachment;
 	envInfo.attachmentCount = std::size(attachment);
 	m_pPipeline             = m_pGpuDevice->GetPipelineManager()->CreateRenderPipeline(envInfo);
-
-	this->SetVertexBuffer(m_vertexData.size(), m_vertexData.size() * sizeof(Vertex),
-	                      reinterpret_cast<uint8_t*>(m_vertexData.data()));
-	this->SetIndexBuffer(m_indices.size(), m_indices.size() * sizeof(uint32_t),
-	                     reinterpret_cast<uint8_t*>(m_indices.data()));
-	this->InsertImageBinding("screenTexture", nullptr, 1);
 }
 
 ScreenPass::~ScreenPass() {
 }
 
-void ScreenPass::SetScreenTexture(Image2D* screenTexture) {
+void ScreenPass::SetScreenTexture(HyperGpu::Image2D* screenTexture) {
 	this->UpdateImageBinding("screenTexture", screenTexture);
 }
 

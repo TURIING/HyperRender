@@ -13,9 +13,6 @@ ScreenWindowTarget::ScreenWindowTarget(HyperGpu::GpuDevice* pGpuDevice, const Pl
     m_pSurface = m_pGpuDevice->CreateSurface(std::bit_cast<HyperGpu::PlatformWindowInfo>(info));
 }
 
-ScreenWindowTarget::~ScreenWindowTarget() {
-}
-
 void ScreenWindowTarget::RenderToScreen(const DrawToTargetInfo& info) {
     m_pScreenFence->Wait();
     uint32_t imageIndex = 0;

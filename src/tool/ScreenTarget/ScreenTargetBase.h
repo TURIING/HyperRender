@@ -10,6 +10,7 @@
 
 #include "IScreenTarget.h"
 #include "../../common/common.h"
+#define FIGHT_FRAME_COUNT 3
 
 class ScreenTargetBase : virtual public HyperRender::IScreenTarget {
 public:
@@ -26,7 +27,7 @@ public:
         m_pCmd = pGpuDevice->GetCmdManager()->CreateCommandBuffer();
         m_pScreenFence = pGpuDevice->GetSyncManager()->CreateFence();
         m_pPresentQueue = m_pGpuDevice->CreateQueue(HyperGpu::QueueType::Present);
-        for(auto i = 0; i < 3; i++) {
+        for(auto i = 0; i < FIGHT_FRAME_COUNT; i++) {
             m_vecScreenSemaphore.push_back(m_pGpuDevice->GetSyncManager()->CreateSemaphore());
         }
     }
@@ -34,7 +35,9 @@ public:
     ~ScreenTargetBase() override {
         m_pCmd->SubRef();
         m_pScreenFence->SubRef();
-//        m_pScreenSemaphore->SubRef();
+        for (auto &semaphore: m_vecScreenSemaphore) {
+            semaphore->SubRef();
+        }
         m_pSurface->SubRef();
         m_pPresentQueue->SubRef();
         m_pGpuDevice->SubRef();

@@ -6,7 +6,9 @@
 * @description: 
 ********************************************************************************/
 #include "BaseTool.h"
+#include "BaseTool.h"
 #include "../common/Camera.h"
+#include "../common/GpuHelper.h"
 
 USING_RENDER_NAMESPACE_BEGIN
 BaseTool::BaseTool(HyperGpu::GpuDevice* pGpuDevice) : m_pGpuDevice(pGpuDevice) {
@@ -15,14 +17,32 @@ BaseTool::BaseTool(HyperGpu::GpuDevice* pGpuDevice) : m_pGpuDevice(pGpuDevice) {
     m_pCommonSampler = m_pGpuDevice->GetResourceManager()->CreateSampler({});
     m_pRenderQueue   = m_pGpuDevice->CreateQueue(HyperGpu::QueueType::Graphics);
     m_pRenderFence   = m_pGpuDevice->GetSyncManager()->CreateFence();
+    m_pGlobalBuffer = GpuHelper::CreateUniformBuffer(m_pGpuDevice, sizeof(GlobalInfo));
 }
 
 BaseTool::~BaseTool() {
     m_pCommonSampler->SubRef();
+    m_pGlobalBuffer->SubRef();
+    m_pRenderFence->SubRef();
+    m_pRenderQueue->SubRef();
+    m_pCmd->SubRef();
     m_pGpuDevice->SubRef();
 }
 
-void BaseTool::ClearColor(IDrawUnit* targetUnit, HyperRender::Color color) {
+void BaseTool::UpdateSize(const Size& size) {
+    const auto halfWidth  = size.width  / 2;
+    const auto halfHeight = size.height / 2;
+
+    Camera camera;
+    camera.SetOrtho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.0f, 1000.0f);
+
+    m_globalInfo.view = camera.GetViewMatrix();
+    m_globalInfo.proj = camera.GetProjectionMatrix();
+
+    m_pGlobalBuffer->UpdateData(reinterpret_cast<uint8_t*>(&m_globalInfo), sizeof(GlobalInfo));
+}
+
+void BaseTool::ClearColor(IDrawUnit* targetUnit, Color color) {
 	const auto unit = dynamic_cast<DrawUnit*>(targetUnit);
 
 	m_pGpuDevice->GetCmdManager()->WithSingleCmdBuffer([&](HyperGpu::GpuCmd* pCmd) {

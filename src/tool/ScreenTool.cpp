@@ -12,7 +12,7 @@
 #include "../pass/ScreenPass.h"
 
 USING_RENDER_NAMESPACE_BEGIN
-ScreenTool::ScreenTool(GpuDevice* gpuDevice) : BaseTool(gpuDevice) {
+ScreenTool::ScreenTool(HyperGpu::GpuDevice* gpuDevice) : BaseTool(gpuDevice) {
     m_pRenderSemaphore = m_pGpuDevice->GetSyncManager()->CreateSemaphore();
 }
 

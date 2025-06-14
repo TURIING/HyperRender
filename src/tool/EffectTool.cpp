@@ -26,7 +26,6 @@ void EffectTool::Begin(const BeginInfo& info) {
     // this->beginRender();
     m_pRoundCornerPass->SetScreenTexture(info.targetUnit);
     m_renderArea = info.renderArea;
-    m_pRoundCornerPass->UpdateSize(m_renderArea.size);
 }
 
 void EffectTool::SetRoundCorner(float radius) {

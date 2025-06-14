@@ -23,6 +23,8 @@
 #include <glm/glm/gtc/matrix_transform.hpp>
 #include <glm/glm/gtc/type_ptr.hpp>
 
+#include "HyperGpu.h"
+
 #include "Render.h"
 #include "RenderType.h"
 #include "LogManager.h"
@@ -39,5 +41,13 @@ int32_t TO_I32(T value) {
     static_assert(std::is_arithmetic<T>::value, "T must be numeric");
     return static_cast<int32_t>(value);
 }
+
+template <typename T>
+int32_t TO_F32(T value) {
+    static_assert(std::is_arithmetic<T>::value, "T must be numeric");
+    return static_cast<float>(value);
+}
+
+#define NODISCARD [[nodiscard]]
 
 #endif //COMMON_H

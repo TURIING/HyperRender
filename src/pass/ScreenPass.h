@@ -11,16 +11,6 @@
 #include "../common/common.h"
 #include "BasePass.h"
 
-namespace HyperGpu
-{
-    class Pipeline;
-    class GpuDevice;
-    class Buffer;
-    class Image2D;
-}
-
-using namespace HyperGpu;
-
 USING_RENDER_NAMESPACE_BEGIN
 
 class ScreenPass : public BasePass {
@@ -30,9 +20,9 @@ class ScreenPass : public BasePass {
     };
 
 public:
-    explicit ScreenPass(GpuDevice* gpuDevice);
+    explicit ScreenPass(HyperGpu::GpuDevice* gpuDevice);
 	~ScreenPass() override;
-    void                    SetScreenTexture(Image2D* screenTexture);
+    void SetScreenTexture(HyperGpu::Image2D* screenTexture);
 
 private:
     std::vector<Vertex> m_vertexData = {

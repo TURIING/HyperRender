@@ -16,41 +16,24 @@ USING_RENDER_NAMESPACE_BEGIN
 
 class Camera;
 class BasePass : public RenderObject {
-	struct GlobalInfo {
-		alignas(16) glm::mat4 view = glm::mat4(1.0f);
-		alignas(16) glm::mat4 proj = glm::mat4(1.0f);
-	};
 
 public:
-	explicit	 BasePass(HyperGpu::GpuDevice* pGpuDevice);
+	explicit BasePass(HyperGpu::GpuDevice* pGpuDevice);
 	~BasePass() override;
-	void UpdateResource();
-	HyperGpu::InputAssembler* GetInputAssembler() { return &m_inputAssembler; }
 	void UpdateImageBinding(const std::string &name, HyperGpu::Image2D* image);
 	void UpdateBufferBinding(const std::string &name, HyperGpu::Buffer* buffer);
-	void InsertImageBinding(const std::string &name, HyperGpu::Image2D* image, uint32_t binding);
-	void InsertBufferBinding(const std::string &name, HyperGpu::Buffer* buffer);
-	void SetVertexBuffer(uint32_t vertexCount, uint64_t bufferSize, uint8_t* data);
-	void SetIndexBuffer(uint32_t indexCount, uint64_t bufferSize, uint8_t* data);
-    [[nodiscard]] HyperGpu::Pipeline* GetPipeline() const { return m_pPipeline; }
-	virtual void UpdateSize(const HyperRender::Size &size) { m_size = size; };
+    NODISCARD HyperGpu::Pipeline* GetPipeline() const { return m_pPipeline; }
+	void SetGlobalUniform(HyperGpu::Buffer* pGlobalBuffer);
+	void Draw(HyperGpu::GpuCmd* pCmd);
 
 protected:
-	HyperGpu::GpuDevice*	 m_pGpuDevice = nullptr;
-    HyperGpu::Pipeline*      m_pPipeline     = nullptr;
-	HyperRender::Size		 m_size;
+	HyperGpu::GpuDevice* m_pGpuDevice = nullptr;
+    HyperGpu::Pipeline* m_pPipeline = nullptr;
 
 private:
-	HyperGpu::InputAssembler m_inputAssembler;
-    HyperGpu::Buffer*        m_pVertexBuffer = nullptr;
-    HyperGpu::Buffer*        m_pIndexBuffer  = nullptr;
-	std::unordered_map<std::string, HyperGpu::Pipeline::ImageBindingInfo> m_mapImageBinding;
-	std::unordered_map<std::string, HyperGpu::Buffer*> m_mapBufferBinding;
-	bool m_isImageBindingDirty = true;
-	bool m_isBufferBindingDirty = true;
-	Camera*           m_pCamera = nullptr;
-	GlobalInfo        m_globalInfo;
-	HyperGpu::Buffer* m_pGlobalBuffer = nullptr;
+	HyperGpu::InputAssembler *m_pInputAssembler = nullptr;
+	std::unordered_map<std::string, HyperGpu::Image2D*> m_mapImage;
+	std::unordered_map<std::string, HyperGpu::Buffer*> m_mapBuffer;
 };
 
 USING_RENDER_NAMESPACE_END

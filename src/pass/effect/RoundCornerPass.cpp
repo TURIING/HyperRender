@@ -32,21 +32,17 @@ RoundCornerPass::RoundCornerPass(HyperGpu::GpuDevice* pGpuDevice): BasePass(pGpu
     };
     m_pPipeline = m_pGpuDevice->GetPipelineManager()->CreateRenderPipeline(envInfo);
 
-    this->SetVertexBuffer(m_vertexData.size(), m_vertexData.size() * sizeof(Vertex),
-                          reinterpret_cast<uint8_t*>(m_vertexData.data()));
-    this->SetIndexBuffer(m_indices.size(), m_indices.size() * sizeof(uint32_t),
-                         reinterpret_cast<uint8_t*>(m_indices.data()));
 
-    HyperGpu::Buffer::BufferCreateInfo bufferCreateInfo{
-        .bufferType = HyperGpu::Buffer::Uniform,
-        .bufferSize = sizeof(LocalInfo),
-        .data = reinterpret_cast<uint8_t*>(&m_localInfo),
-        .binding = 2,
-    };
-    m_pLocalBuffer = m_pGpuDevice->GetResourceManager()->CreateBuffer(bufferCreateInfo);
-
-    this->InsertImageBinding("targetTexture", nullptr, 1);
-    this->InsertBufferBinding("localInfo", m_pLocalBuffer);
+    // HyperGpu::Buffer::BufferCreateInfo bufferCreateInfo{
+    //     .bufferType = HyperGpu::Buffer::Uniform,
+    //     .bufferSize = sizeof(LocalInfo),
+    //     .data = reinterpret_cast<uint8_t*>(&m_localInfo),
+    //     .binding = 2,
+    // };
+    // m_pLocalBuffer = m_pGpuDevice->GetResourceManager()->CreateBuffer(bufferCreateInfo);
+    //
+    // this->InsertImageBinding("targetTexture", nullptr, 1);
+    // this->InsertBufferBinding("localInfo", m_pLocalBuffer);
 }
 
 RoundCornerPass::~RoundCornerPass() {
@@ -57,10 +53,5 @@ void RoundCornerPass::SetScreenTexture(IDrawUnit* screenTexture) {
     this->UpdateImageBinding("targetTexture", unit->GetImage());
 }
 
-void RoundCornerPass::UpdateSize(const HyperRender::Size& size) {
-    BasePass::UpdateSize(size);
-    m_localInfo.resolution = { size.width, size.height };
-    m_pLocalBuffer->UpdateData(reinterpret_cast<uint8_t*>(&m_localInfo), sizeof(LocalInfo));
-}
 
 USING_RENDER_NAMESPACE_END

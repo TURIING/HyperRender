@@ -27,7 +27,6 @@ public:
     explicit RoundCornerPass(HyperGpu::GpuDevice* pGpuDevice);
     ~RoundCornerPass() override;
     void SetScreenTexture(IDrawUnit* screenTexture);
-    void UpdateSize(const HyperRender::Size& size) override;
 
 private:
     HyperGpu::Buffer*   m_pVertexBuffer = nullptr;

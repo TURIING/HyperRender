@@ -14,13 +14,10 @@
 
 USING_RENDER_NAMESPACE_BEGIN
 
-class ScreenWindowTarget final: public ScreenTargetBase, virtual public HyperRender::IScreenTarget {
+class ScreenWindowTarget final: public ScreenTargetBase, virtual public IScreenTarget {
 public:
     ScreenWindowTarget(HyperGpu::GpuDevice* pGpuDevice, const PlatformWindowInfo& info);
-    ~ScreenWindowTarget() override;
     void RenderToScreen(const DrawToTargetInfo& info) override;
-
-private:
 };
 
 USING_RENDER_NAMESPACE_END
