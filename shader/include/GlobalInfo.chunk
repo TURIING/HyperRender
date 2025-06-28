@@ -1,0 +1,4 @@
+layout (binding = 0) uniform GlobalInfo {
+    mat4 view;
+    mat4 proj;
+} globalInfo;
