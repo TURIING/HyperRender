@@ -13,6 +13,11 @@
 
 USING_RENDER_NAMESPACE_BEGIN
 
+Color Color::White = { 1.0, 1.0, 1.0, 1.0};
+Color Color::Black= { 0.0, 0.0, 0.0, 1.0};
+Color Color::Red = { 1.0, 0.0, 0.0, 1.0};
+Color Color::Green = { 0.0, 1.0, 0.0, 1.0};
+
 ToolFactory::ToolFactory(GpuType type) {
 	Singleton<LogManager>::GetInstance()->Init();
 

@@ -12,7 +12,6 @@
 #include "../../include/IScreenTool.h"
 #include "../common/common.h"
 
-class ScreenPass;
 
 namespace HyperGpu {
 class Sampler;
@@ -26,6 +25,7 @@ class GpuSurface;
 
 USING_RENDER_NAMESPACE_BEGIN
 class ScreenWindowTarget;
+class ScreenPass;
 
 class ScreenTool final : public IScreenTool, public BaseTool {
 public:
@@ -41,10 +41,12 @@ private:
     void renderToScreen();
 
 private:
+    ScreenPass *m_pScreenPass = nullptr;
     HyperGpu::GpuSurface *m_pSurface = nullptr;
     ScreenWindowTarget* m_pScreenTarget = nullptr;
     HyperGpu::Semaphore* m_pRenderSemaphore = nullptr;
     DrawUnit* m_pScreenTexture = nullptr;
+    DrawUnit* m_pTmpTexture = nullptr;
 };
 
 USING_RENDER_NAMESPACE_END

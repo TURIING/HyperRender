@@ -16,6 +16,7 @@ BasePass::BasePass(HyperGpu::GpuDevice* pGpuDevice) : m_pGpuDevice(pGpuDevice) {
 
 BasePass::~BasePass() {
 	m_pPipeline->SubRef();
+	m_pInputAssembler->SubRef();
 	m_pGpuDevice->SubRef();
 }
 

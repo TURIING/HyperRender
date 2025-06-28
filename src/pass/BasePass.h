@@ -29,9 +29,9 @@ public:
 protected:
 	HyperGpu::GpuDevice* m_pGpuDevice = nullptr;
     HyperGpu::Pipeline* m_pPipeline = nullptr;
+	HyperGpu::InputAssembler *m_pInputAssembler = nullptr;
 
 private:
-	HyperGpu::InputAssembler *m_pInputAssembler = nullptr;
 	std::unordered_map<std::string, HyperGpu::Image2D*> m_mapImage;
 	std::unordered_map<std::string, HyperGpu::Buffer*> m_mapBuffer;
 };

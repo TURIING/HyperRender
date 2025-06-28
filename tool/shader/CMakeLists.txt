@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.29)
 project(ShaderCompiler)
 
-set(PATH_BIN "/Users/turiing/VulkanSDK/1.3.296.0/macOS/bin")
+set(PATH_BIN "$ENV{VULKAN_SDK}/bin")
 set(GLSL_LANG_VALIDATOR "${PATH_BIN}/glslangValidator")
 set(PATH_SHADER_INPUT "../../shader")
 set(PATH_SHADER_OUTPUT "../../src/shader/vulkan")
