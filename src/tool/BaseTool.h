@@ -11,6 +11,7 @@
 #include "../../include/ITool.h"
 #include "../common/common.h"
 #include "HyperGpu.h"
+#include "../common/DrawUnit.h"
 
 USING_RENDER_NAMESPACE_BEGIN
 
@@ -26,11 +27,13 @@ public:
 	void UpdateSize(const Size &size);
 	void ClearColor(IDrawUnit *targetUnit, Color color) override;
 	NODISCARD DrawUnit *CreateDrawUnit(const Area &area) override;
+	void CopyDrawUnit(IDrawUnit *pSrcUnit, IDrawUnit *pDstUnit) override;
+	void FillDrawUnit(IDrawUnit *pUnit, const void *data, uint64_t size) override;
 
 protected:
 	void clearColor(HyperGpu::GpuCmd *pCmd, IDrawUnit *targetUnit, Color color);
 	void begin() const;
-	void end(const std::vector<HyperGpu::Semaphore *> &signalSemaphore) const;
+	void end(const std::vector<HyperGpu::Semaphore *> &signalSemaphore = {}) const;
 	void SubmitCmd(const std::vector<HyperGpu::GpuCmd *> &cmds,
 				   const std::vector<HyperGpu::Semaphore *> &waitSemaphores,
 				   const std::vector<HyperGpu::Semaphore *> &signalSemaphores,

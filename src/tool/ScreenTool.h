@@ -32,8 +32,8 @@ public:
     explicit ScreenTool(HyperGpu::GpuDevice *gpuDevice);
     ~ ScreenTool() override;
     IScreenTarget *CreateScreen(const HyperRender::PlatformWindowInfo &platformSurfaceInfo) override;
-
     void SetScreenTarget(IScreenTarget *target) override;
+    void AddScreenObject(IDrawUnit *pObjUnit, const Area &area) override;
     void BeginRenderToScreen(const Area &updateArea) override;
     void EndRenderToScreen() override;
 

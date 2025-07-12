@@ -26,26 +26,11 @@ class RoundCornerPass final : public BasePass {
 public:
     explicit RoundCornerPass(HyperGpu::GpuDevice* pGpuDevice);
     ~RoundCornerPass() override;
-    void SetScreenTexture(IDrawUnit* screenTexture);
-
-private:
-    HyperGpu::Buffer*   m_pVertexBuffer = nullptr;
-    HyperGpu::Buffer*   m_pIndexBuffer  = nullptr;
+    void SetMainTexture(HyperGpu::Image2D* mainTexture);
 
 private:
     HyperGpu::Buffer*   m_pLocalBuffer  = nullptr;
     LocalInfo           m_localInfo{};
-    std::vector<Vertex> m_vertexData = {
-        // 位置
-        {{-1.0f, -1.0f}}, // 左下角
-        {{1.0f, -1.0f}},  // 右下角
-        {{1.0f, 1.0f}},   // 右上角
-        {{-1.0, 1.0f}},   // 左上角
-    };
-    std::vector<uint32_t> m_indices = {
-        0, 1, 2, // 第一个三角形（左下 - 右下 - 右上）
-        2, 3, 0  // 第二个三角形（右上 - 左上 - 左下）
-    };
 };
 
 USING_RENDER_NAMESPACE_END

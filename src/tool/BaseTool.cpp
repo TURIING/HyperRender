@@ -54,6 +54,32 @@ DrawUnit* BaseTool::CreateDrawUnit(const Area& area) {
     return new DrawUnit(m_pGpuDevice, {area, m_pCommonSampler});
 }
 
+void BaseTool::CopyDrawUnit(IDrawUnit *pSrcUnit, IDrawUnit *pDstUnit) {
+    LOG_ASSERT(pSrcUnit->GetTextureSize() == pDstUnit->GetTextureSize());
+    const auto srcUnit = dynamic_cast<DrawUnit*>(pSrcUnit);
+    const auto dstUnit = dynamic_cast<DrawUnit*>(pDstUnit);
+
+    m_pGpuDevice->GetCmdManager()->WithSingleCmdBuffer([&](HyperGpu::GpuCmd* pCmd) {
+        std::vector<HyperGpu::ImageCopyRange> ranges = {
+            {
+                .srcArea = std::bit_cast<HyperGpu::Area>(srcUnit->GetArea()),
+                .dstArea = std::bit_cast<HyperGpu::Area>(dstUnit->GetArea())
+            },
+        };
+        pCmd->CopyImage(srcUnit->GetImage(), dstUnit->GetImage(), ranges.data(), ranges.size());
+    });
+}
+
+void BaseTool::FillDrawUnit(IDrawUnit *pUnit, const void *data, uint64_t size) {
+    LOG_ASSERT(pUnit);
+
+    const auto unit = dynamic_cast<DrawUnit*>(pUnit);
+    m_pGpuDevice->GetCmdManager()->WithSingleCmdBuffer([&](HyperGpu::GpuCmd* pCmd) {
+        const auto image = unit->GetImage();
+        pCmd->CopyBufferToImage(image, data, size, std::bit_cast<HyperGpu::Area>(unit->GetArea()));
+    });
+}
+
 void BaseTool::begin() const {
     m_pRenderFence->Wait();
     m_pRenderFence->Reset();

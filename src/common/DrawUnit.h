@@ -17,19 +17,23 @@ USING_RENDER_NAMESPACE_BEGIN
 class DrawUnit final: public IDrawUnit {
 public:
     struct DrawUnitCreateInfo {
-        HyperRender::Area area;
+        Area area;
         HyperGpu::Sampler* pSampler = nullptr;
     };
 
 public:
     DrawUnit(HyperGpu::GpuDevice* pGpuDevice, const DrawUnitCreateInfo& info);
     ~DrawUnit() override;
-    [[nodiscard]] HyperRender::Area GetArea() const override { return m_area; }
-    [[nodiscard]] HyperGpu::Image2D* GetImage() const { return m_pImage2D; }
+    NODISCARD Area GetArea() const override { return m_area; }
+    NODISCARD Size GetSize() const override { return m_area.size; }
+    NODISCARD HyperGpu::Image2D* GetImage() const { return m_pImage2D; }
+    NODISCARD Size GetTextureSize() const override { return m_textureSize; }
+    void SetArea(const Area &newArea) override;
 
 private:
     HyperGpu::Image2D* m_pImage2D = nullptr;
-    HyperRender::Area m_area;
+    Area m_area;
+    Size m_textureSize;
 };
 
 USING_RENDER_NAMESPACE_END

@@ -8,7 +8,7 @@
 #include "DrawUnit.h"
 USING_RENDER_NAMESPACE_BEGIN
 
-DrawUnit::DrawUnit(HyperGpu::GpuDevice* pGpuDevice, const DrawUnitCreateInfo &info): m_area(info.area) {
+DrawUnit::DrawUnit(HyperGpu::GpuDevice* pGpuDevice, const DrawUnitCreateInfo &info): m_area(info.area), m_textureSize(info.area.size) {
     HyperGpu::Image2D::Image2DCreateInfo createInfo {
         .size = std::bit_cast<HyperGpu::Size>(info.area.size),
         .pSampler = info.pSampler,
@@ -20,6 +20,11 @@ DrawUnit::DrawUnit(HyperGpu::GpuDevice* pGpuDevice, const DrawUnitCreateInfo &in
 
 DrawUnit::~DrawUnit() {
     m_pImage2D->SubRef();
+}
+
+void DrawUnit::SetArea(const Area &newArea) {
+    LOG_ASSERT_INFO(m_textureSize >= newArea.size, "Area too big");
+    m_area = newArea;
 }
 
 USING_RENDER_NAMESPACE_END

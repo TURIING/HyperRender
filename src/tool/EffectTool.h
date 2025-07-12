@@ -19,12 +19,17 @@ class EffectTool final : public IEffectTool, public BaseTool {
 public:
 	explicit EffectTool(HyperGpu::GpuDevice* pGpuDevice);
 	~EffectTool() override;
-	void     Begin(const BeginInfo& info) override;
-	void     SetRoundCorner(float radius) override;
-	void     End(IDrawUnit* resultUnit) override;
+	void SetRoundCorner(float radius) override;
+	void SetTargetUnit(IDrawUnit *pTargetUnit) override;
+	void Begin(const Area &renderArea) override;
+	void Render() override;
+	void End() override;
+	void RenderToUnit(IDrawUnit *resultUnit) override;
 
 private:
 	RoundCornerPass* m_pRoundCornerPass = nullptr;
+	IDrawUnit* m_pTargetUnit = nullptr;
+	DrawUnit* m_pResultUnit = nullptr;
 };
 
 USING_RENDER_NAMESPACE_END

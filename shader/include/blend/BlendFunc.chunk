@@ -1,0 +1,397 @@
+#include "blend/hsvFuncs.chunk"
+
+//正片叠底
+vec4 multiplyBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    resultColor.rgb = baseColor.rgb * overlayColor.rgb;
+
+    return resultColor;
+}
+
+//变暗
+vec4 darkenBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    resultColor.rgb = min(baseColor.rgb,overlayColor.rgb);
+
+    return resultColor;
+}
+
+//颜色加深
+vec4 colorBurnBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    resultColor.rgb = max(1.0 - (1.0/overlayColor.rgb)*(1.0 - baseColor.rgb), vec3(0.0));
+
+    return resultColor;
+}
+
+//线性加深
+vec4 ColorLinearBurnBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+    resultColor.rgb = max(baseColor.rgb + overlayColor.rgb - vec3(1.0), vec3(0.0));
+
+    return resultColor;
+}
+
+//深色
+vec4 darkColorBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    float bgAll=0.0722*baseColor.b+0.7152*baseColor.g+0.2126*baseColor.r;
+    float laAll=0.0722*overlayColor.b+0.7152*overlayColor.g+0.2126*overlayColor.r;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    vec3 c1 = base + blend*overlayColor.a - (baseColor.a*overlayColor.a)*blend;
+    vec3 c2 = base + blend*overlayColor.a - (baseColor.a*overlayColor.a)*base;
+    float stepValue = step(bgAll, laAll);
+
+    resultColor.rgb = c1*stepValue + c2*(1-stepValue);
+
+    return resultColor;
+}
+
+//正常融合
+vec4 normalBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor = overlayColor + (1.0 - overlayColor.a)*baseColor;
+    return resultColor;
+}
+
+//变亮
+vec4 lightenBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    resultColor.rgb = max(baseColor.rgb,overlayColor.rgb);
+
+    return resultColor;
+}
+
+//滤色
+vec4 screenBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    resultColor.rgb = 1.0 - (1.0 - baseColor.rgb) * (1.0 - overlayColor.rgb);
+
+    return resultColor;
+}
+
+//颜色减淡
+vec4 colorDodgeBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    vec3 epsilon = vec3(1e-10); // 小的偏移量，避免除以零
+    vec3 safeColorB = clamp(blend, vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0) - epsilon); // 确保 colorB 不会导致除以零
+    resultColor.rgb = base * (1.0 / (1.0 - safeColorB));
+
+    return resultColor;
+}
+
+//添加 (线性减淡)
+vec4 addBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    resultColor.rgb = clamp(base + blend, vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));
+
+    return resultColor;
+}
+
+//浅色
+vec4 lightBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    float bgAll=0.0722*baseColor.b+0.7152*baseColor.g+0.2126*baseColor.r;
+    float laAll=0.0722*overlayColor.b+0.7152*overlayColor.g+0.2126*overlayColor.r;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    vec3 c1 = base + blend*overlayColor.a - (baseColor.a*overlayColor.a)*blend;
+    vec3 c2 = base + blend*overlayColor.a - (baseColor.a*overlayColor.a)*base;
+    float stepValue = step(laAll, bgAll);
+
+    resultColor.rgb = c1*stepValue + c2*(1-stepValue);
+
+
+    return resultColor;
+}
+
+// 覆盖 | 叠加
+vec4 coverBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    vec3 OA = step(base.rgb, vec3(0.5));
+    vec3 c1 = base * blend * 2.0 * OA;
+    vec3 c2 = (1.0 - 2.0 * (1.0 - base) * (1.0 - blend)) * (1.0 - OA);
+    resultColor.rgb = c1 + c2;
+
+    return resultColor;
+}
+
+//柔光
+vec4 softlightBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    vec3 OB = step(blend.rgb, vec3(0.5));
+
+    vec3 c1 = ((2*blend - 1.0) * (base - base*base) + base) * OB;
+    vec3 c2 = ((2*blend - 1.0) * (sqrt(base) - base) + base) * (1.0 - OB);
+
+    resultColor.rgb = c1 + c2;
+
+    return resultColor;
+}
+
+//强光
+vec4 hardLightBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    vec3 OB = step(blend.rgb, vec3(0.5));
+
+    vec3 c1 = ((2*blend - 1.0) * (base - base*base) + base) * OB;
+    vec3 c2 = ((2*blend - 1.0) * (sqrt(base) - base) + base) * (1.0 - OB);
+
+
+    resultColor.rgb = mix(2.0 * base * blend, 1.0 - 2.0 * (1.0 - base) * (1.0 - blend), step(0.5, blend));
+
+    return resultColor;
+}
+
+//亮光
+vec4 vividLightBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    vec3 colorBurn = 1.0 - (1.0 - base) / (2.0*blend);
+    vec3 colorDodge = base / (1.0 - 2.0*(blend-0.5));
+
+    resultColor.rgb =  mix(colorBurn,colorDodge, step(0.5, blend));
+
+    return resultColor;
+}
+
+//线性光
+vec4 lineraLightBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    vec3 linearBurn = base + (2.0*blend) - 1.0;
+    vec3 linearDodge = base + 2.0 * (blend - 0.5);
+
+    resultColor.rgb = mix(linearBurn, linearDodge,step(0.5, blend));
+
+    return resultColor;
+}
+
+//点光
+vec4 pinLightBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    resultColor.rgb = mix(min(base, 2.0 * blend),max(base, 2.0 * (blend - 0.5)),step(0.5, blend));
+
+    return resultColor;
+}
+
+//实色混合
+vec4 hardMixBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    resultColor.rgb = step(1 - base, blend);
+
+    return resultColor;
+}
+
+//差值
+vec4 differenceBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    resultColor.rgb = abs(base-blend);
+
+    return resultColor;
+}
+
+//排除
+vec4 exclusionBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    resultColor.rgb = base + blend - 2.0 * base * blend;
+
+    return resultColor;
+}
+
+//减去
+vec4 subtractBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    resultColor.rgb = max(base - blend, 0.0);
+
+    return resultColor;
+}
+
+//划分
+vec4 divideBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    resultColor.r = blend.r == 0.0 ? 1.0 : base.r/blend.r;
+    resultColor.g = blend.g == 0.0 ? 1.0 : base.g/blend.g;
+    resultColor.b = blend.b == 0.0 ? 1.0 : base.b/blend.b;
+
+    return resultColor;
+}
+
+//色相 -- ok
+vec4 hueBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    vec3 baseHsv = rgbToHsv(base);
+    vec3 blendHsv = rgbToHsv(blend);
+
+    // 使用混合颜色的色相，但保留基础颜色的饱和度和明度
+    vec3 resultHsv = vec3(blendHsv.x, baseHsv.y, baseHsv.z);
+    resultColor.rgb = hsvToRgb(resultHsv);
+
+    return resultColor;
+}
+
+//饱和度 -- ok
+vec4 saturationBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    vec3 baseHsv = rgbToHsv(base);
+    vec3 blendHsv = rgbToHsv(blend);
+
+    // 使用混合颜色的饱和度，但保留基础颜色的色相和明度
+    vec3 resultHsv = vec3(baseHsv.x, blendHsv.y, baseHsv.z);
+    resultColor.rgb = hsvToRgb(resultHsv);
+
+    return resultColor;
+}
+
+//颜色 -- ok
+vec4 hvsColorBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    vec3 baseHsv = rgbToHsv(base);
+    vec3 blendHsv = rgbToHsv(blend);
+
+    // 使用混合颜色的饱和度，但保留基础颜色的色相和明度
+    vec3 resultHsv = vec3(blendHsv.x, blendHsv.y, baseHsv.z);
+    resultColor.rgb = hsvToRgb(resultHsv);
+
+    return resultColor;
+}
+
+//明度  -- ok
+vec4 luminosityBlendColor(vec4 baseColor, vec4 overlayColor)
+{
+    vec4 resultColor;
+    resultColor.a = overlayColor.a * overlayColor.a + (1.0 - overlayColor.a)*baseColor.a;
+
+    vec3 base = baseColor.rgb;
+    vec3 blend = overlayColor.rgb;
+
+    vec3 baseHsv = rgbToHsv(base);
+    vec3 blendHsv = rgbToHsv(blend);
+    vec3 resultHsv = vec3(baseHsv.x, baseHsv.y, blendHsv.z);
+
+    resultColor.rgb = hsvToRgb(resultHsv);
+
+    return resultColor;
+}

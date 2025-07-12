@@ -19,6 +19,10 @@ namespace HyperRender
     	bool operator==(const Size& rhs) const {
     		return width == rhs.width && height == rhs.height;
     	}
+
+    	bool operator>=(const Size& rhs) const {
+    		return width >= rhs.width && height >= rhs.height;
+    	}
     };
 
 	struct Offset2D {
@@ -50,6 +54,36 @@ namespace HyperRender
 		static Color Red;
 		static Color Green;
 	};
+
+	enum class BlendType {
+		Multiply,			    // 正片叠底
+		Darken,					// 变暗
+		ColorBurn,			    // 颜色加深
+		ColorLinearBurn, 		// 线性加深
+		DarkColor,			    // 深色
+		Normal,					// 正常
+		Lighten,			    // 变亮
+		Screen,					// 滤色
+		ColorDodge,			    // 颜色减淡
+		Add,					// 添加 (线性减淡)
+		LightColor,			    // 浅色
+		Cover,					// 覆盖 | 叠加
+		SoftLight,			  	// 柔光
+		HardLight,			  	// 强光
+		ViviLight,			  	// 亮光
+		LinearLight,			// 线性光
+		PinLight,			  	// 点光
+		HardMix,			  	// 实色混合
+		Difference,			  	// 差值
+		Exclusion,			  	// 排除
+		Subtract,			  	// 减去
+		Divide,					// 划分
+		HubHsv,					// 色相
+		SaturationHsv,			// 饱和度
+		ColorHsv,				// 颜色
+		LuminosityHsv,			// 明度
+	};
+
 }
 
 #endif //RENDERTYPE_H

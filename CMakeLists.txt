@@ -21,3 +21,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 #        XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ""
         XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY "YES"
 )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    add_definitions(-DOPENGL_DESKTOP)
+else ()
+    add_definitions(-DOPENGL_MOBILE)
+endif ()

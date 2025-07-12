@@ -14,7 +14,10 @@
 namespace HyperRender {
     class IDrawUnit : public RenderObject {
     public:
-        [[nodiscard]] virtual HyperRender::Area GetArea() const = 0;
+        [[nodiscard]] virtual Area GetArea() const = 0;
+        [[nodiscard]] virtual Size GetSize() const = 0;
+        [[nodiscard]] virtual Size GetTextureSize() const = 0;
+        virtual void SetArea(const Area &newArea) = 0;
     };
 
 }

@@ -15,23 +15,28 @@
 namespace HyperRender {
 class IEffectTool : virtual public ITool {
 public:
-	struct BeginInfo {
-		IDrawUnit* targetUnit = nullptr;	// 施加效果的DrawUnit
-		Area renderArea;					// 影响区域
-	};
+	virtual void Begin(const Area &renderArea) = 0;
 
-public:
-	virtual void Begin(const BeginInfo& info) = 0;
+	/**
+	 * 设置施加效果的DrawUnit
+	 * @param pTargetUnit
+	 */
+	virtual void SetTargetUnit(IDrawUnit* pTargetUnit) = 0;
 
 	/**
 	 * @param radius 圆角度数，值在0-1之间
 	 */
 	virtual void SetRoundCorner(float radius) = 0;
 
+	virtual void Render() = 0;
+
+	virtual void End() = 0;
+
 	/**
-	 * @param resultUnit 将结果输出到某个DrawUnit，也可以为空，为空即在targetUnit里绘制
+	 * 将结果输出到某个DrawUnit
+	 * @param resultUnit
 	 */
-	virtual void End(IDrawUnit* resultUnit = nullptr) = 0;
+	virtual void RenderToUnit(IDrawUnit* resultUnit) = 0;
 };
 }
 #endif // IEFFECTTOOL_H

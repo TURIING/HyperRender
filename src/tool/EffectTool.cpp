@@ -15,51 +15,54 @@ EffectTool::EffectTool(HyperGpu::GpuDevice* pGpuDevice): BaseTool(pGpuDevice) {
 }
 
 EffectTool::~EffectTool() {
-    // m_pRoundCornerPass->SubRef();
-    // m_pImageAvailableSemaphore->SubRef();
-    // m_pRenderFinishedSemaphore->SubRef();
-    // m_pInFlightFence->SubRef();
-    // m_pCmd->SubRef();
-}
-
-void EffectTool::Begin(const BeginInfo& info) {
-    // this->beginRender();
-    m_pRoundCornerPass->SetScreenTexture(info.targetUnit);
-    m_renderArea = info.renderArea;
+    m_pRoundCornerPass->SubRef();
 }
 
 void EffectTool::SetRoundCorner(float radius) {
 }
 
-void EffectTool::End(IDrawUnit* resultUnit) {
-    // m_pRoundCornerPass->UpdateResource();
-    //
-    // auto       unit     = dynamic_cast<DrawUnit*>(resultUnit)->GetImage();
-    // const auto viewport = HyperGpu::Viewport{
-    //     .x = static_cast<float>(m_renderArea.offset.x),
-    //     .y = static_cast<float>(m_renderArea.offset.y),
-    //     .width = static_cast<float>(m_renderArea.size.width),
-    //     .height = static_cast<float>(m_renderArea.size.height),
-    // };
-    //
-    // HyperGpu::GpuCmd::BeginRenderInfo beginRenderInfo{
-    //     .pipeline = m_pRoundCornerPass->GetPipeline(),
-    //     .viewport = viewport,
-    //     .scissor = std::bit_cast<HyperGpu::Scissor>(m_renderArea),
-    //     .clearValue = {HyperGpu::ClearValue{.color = {0.0f, 0.0f, 0.0f, 0.0f}}},
-    //     .renderArea = std::bit_cast<HyperGpu::Area>(m_renderArea),
-    //     .renderAttachmentType = HyperGpu::GpuCmd::RenderAttachmentType::Image2D,
-    //     .renderAttachment = {1, &unit}
-    // };
-    // const HyperGpu::GpuCmd::DrawInfo drawInfo{
-    //     .inputAssembler = m_pRoundCornerPass->GetInputAssembler()
-    // };
-    //
-    // m_pCmd->Begin(beginRenderInfo);
-    // m_pCmd->Draw(drawInfo);
-    // m_pCmd->End();
-    //
-    // endRender();
+void EffectTool::Begin(const Area &renderArea) {
+    m_renderArea = renderArea;
+
+    if (m_pResultUnit && renderArea.size == m_pResultUnit->GetTextureSize()) {
+        m_pResultUnit->SetArea(renderArea);
+    }
+    else {
+        if (m_pResultUnit) m_pResultUnit->SubRef();
+        m_pResultUnit = BaseTool::CreateDrawUnit(renderArea);
+    }
+
+    m_pTargetUnit->AddRef();
+    begin();
+}
+
+void EffectTool::Render() {
+    auto image = m_pResultUnit->GetImage();
+    HyperGpu::BeginRenderInfo beginInfo {
+        .pPipeline = m_pRoundCornerPass->GetPipeline(),
+        .clearValue = { { HyperGpu::AttachmentType::COLOR, {0.0, 0.0, 0.0, 0.0 }}},
+        .renderArea = std::bit_cast<HyperGpu::Area>(m_renderArea),
+        .renderAttachmentType = HyperGpu::RenderAttachmentType::Image2D,
+        .renderAttachment = {1, &image},
+    };
+    m_pCmd->BeginRenderPass(beginInfo);
+    m_pCmd->SetViewport({0, 0, (float)m_renderArea.size.width, (float)m_renderArea.size.height});
+    m_pCmd->SetScissor({0, 0, m_renderArea.size.width, m_renderArea.size.height});
+    m_pRoundCornerPass->Draw(m_pCmd);
+    m_pCmd->EndRenderPass();
+}
+
+void EffectTool::SetTargetUnit(IDrawUnit *pTargetUnit) {
+    m_pTargetUnit = pTargetUnit;
+}
+
+void EffectTool::End() {
+    end();
+    if (m_pTargetUnit) m_pTargetUnit->SubRef();
+}
+
+void EffectTool::RenderToUnit(IDrawUnit *resultUnit) {
+    BaseTool::CopyDrawUnit(m_pResultUnit, resultUnit);
 }
 
 USING_RENDER_NAMESPACE_END

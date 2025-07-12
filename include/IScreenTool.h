@@ -26,6 +26,13 @@ namespace HyperRender {
 
         virtual void SetScreenTarget(IScreenTarget *target) = 0;
 
+        /**
+         * 添加上屏对象
+         * @param pObjUnit
+         * @param area 上屏的区域
+         */
+        virtual void AddScreenObject(IDrawUnit* pObjUnit, const Area &area) = 0;
+
         virtual void BeginRenderToScreen(const Area &updateArea) = 0;
 
         virtual void EndRenderToScreen() = 0;

@@ -22,6 +22,7 @@ ScreenTool::~ScreenTool() {
     m_pRenderSemaphore->SubRef();
     m_pScreenTexture->SubRef();
     m_pScreenTarget->SubRef();
+    m_pScreenPass->SubRef();
 }
 
 IScreenTarget* ScreenTool::CreateScreen(const PlatformWindowInfo& platformSurfaceInfo) {
@@ -33,24 +34,26 @@ void ScreenTool::SetScreenTarget(IScreenTarget* target) {
     m_pScreenTarget->AddRef();
 }
 
+void ScreenTool::AddScreenObject(IDrawUnit *pObjUnit, const Area &area) {
+    m_pTmpTexture = dynamic_cast<DrawUnit *>(pObjUnit);
+    m_pTmpTexture->AddRef();
+}
+
 void ScreenTool::BeginRenderToScreen(const Area& updateArea) {
     m_renderArea = updateArea;
-    if (!m_pScreenTexture && !m_pTmpTexture) {
+    if (!m_pScreenTexture) {
         m_pScreenTexture = this->CreateDrawUnit(updateArea);
-        m_pTmpTexture = CreateDrawUnit(updateArea);
     }
     begin();
-    static bool first = true;
-    BaseTool::ClearColor(m_pTmpTexture, first ? Color::Red : Color::Green);
-    first = !first;
+    BaseTool::clearColor(m_pCmd, m_pScreenTexture, {0, 0, 1, 0.1});
     m_pScreenPass->SetScreenTexture(m_pTmpTexture->GetImage());
-
+    m_pScreenPass->SetBlendType(BlendType::Normal);
     auto image = m_pScreenTexture->GetImage();
-    HyperGpu::GpuCmd::BeginRenderInfo beginInfo {
+    HyperGpu::BeginRenderInfo beginInfo {
         .pPipeline = m_pScreenPass->GetPipeline(),
-        .clearValue = { { HyperGpu::AttachmentType::COLOR, {0.0, 0.0, 0.0, 0.0 }}},
+        // .clearValue = { { HyperGpu::AttachmentType::COLOR, {0.0, 0.0, 1.0, 0.8 }}},
         .renderArea = std::bit_cast<HyperGpu::Area>(updateArea),
-        .renderAttachmentType = HyperGpu::GpuCmd::RenderAttachmentType::Image2D,
+        .renderAttachmentType = HyperGpu::RenderAttachmentType::Image2D,
         .renderAttachment = {1, &image},
     };
     m_pCmd->BeginRenderPass(beginInfo);

@@ -28,23 +28,23 @@
 #include "Render.h"
 #include "RenderType.h"
 #include "LogManager.h"
-#include "DrawUnit.h"
+// #include "DrawUnit.h"
 
 template <typename T>
 uint32_t TO_U32(T value) {
-    static_assert(std::is_arithmetic<T>::value, "T must be numeric");
+    static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>, "T must be numeric or enum");
     return static_cast<uint32_t>(value);
 }
 
 template <typename T>
 int32_t TO_I32(T value) {
-    static_assert(std::is_arithmetic<T>::value, "T must be numeric");
+    static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>, "T must be numeric or enum");
     return static_cast<int32_t>(value);
 }
 
 template <typename T>
 int32_t TO_F32(T value) {
-    static_assert(std::is_arithmetic<T>::value, "T must be numeric");
+    static_assert(std::is_arithmetic_v<T>, "T must be numeric");
     return static_cast<float>(value);
 }
 

@@ -43,19 +43,19 @@ void BasePass::SetGlobalUniform(HyperGpu::Buffer* pGlobalBuffer) {
 }
 
 void BasePass::Draw(HyperGpu::GpuCmd* pCmd) {
-	std::vector<HyperGpu::GpuCmd::ImageBinding> imageBindings;
+	std::vector<HyperGpu::ImageBinding> imageBindings;
 	imageBindings.reserve(m_mapImage.size());
 	std::ranges::transform(m_mapImage, std::back_inserter(imageBindings), [](auto &pair) {
-		return HyperGpu::GpuCmd::ImageBinding {pair.second, pair.first.c_str()};
+		return HyperGpu::ImageBinding {pair.second, pair.first.c_str()};
 	});
 
-	std::vector<HyperGpu::GpuCmd::UniformBinding> bufferBindings;
+	std::vector<HyperGpu::UniformBinding> bufferBindings;
 	bufferBindings.reserve(m_mapBuffer.size());
 	std::ranges::transform(m_mapBuffer.begin(), m_mapBuffer.end(), std::back_inserter(bufferBindings), [](auto &pair) {
-		return HyperGpu::GpuCmd::UniformBinding {pair.second,  pair.first.c_str()};
+		return HyperGpu::UniformBinding {pair.second,  pair.first.c_str()};
 	});
 
-	HyperGpu::GpuCmd::DrawInfo drawInfo {
+	HyperGpu::DrawInfo drawInfo {
 		.pInputAssembler = m_pInputAssembler,
 		.pUniformBinding = bufferBindings.data(),
 		.uniformBindingCount = TO_U32(bufferBindings.size()),
@@ -63,6 +63,38 @@ void BasePass::Draw(HyperGpu::GpuCmd* pCmd) {
 		.imageBindingCount = TO_U32(imageBindings.size()),
 	};
 	pCmd->Draw(drawInfo);
+}
+
+void BasePass::SetBlendType(BlendType blendType) {
+	auto &blendInfo = m_pPipeline->renderEnvInfo.blendInfo;
+
+	switch (blendType) {
+		case BlendType::Cover: {
+			blendInfo.enable = false;
+			break;
+		}
+		case BlendType::Multiply: {
+			blendInfo.enable = true;
+			blendInfo.srcColorBlendFactor = HyperGpu::BlendFactor::DST_COLOR;
+			blendInfo.dstColorBlendFactor = HyperGpu::BlendFactor::ZERO;
+			blendInfo.srcAlphaBlendFactor = HyperGpu::BlendFactor::ONE;
+			blendInfo.dstAlphaBlendFactor = HyperGpu::BlendFactor::ZERO;
+			blendInfo.colorBlendOp = HyperGpu::BlendOp::ADD;
+			blendInfo.alphaBlendOp = HyperGpu::BlendOp::ADD;
+			break;
+		}
+		case BlendType::Normal: {
+			blendInfo.enable = true;
+			blendInfo.srcColorBlendFactor = HyperGpu::BlendFactor::SRC_ALPHA;
+			blendInfo.dstColorBlendFactor = HyperGpu::BlendFactor::ONE_MINUS_SRC_ALPHA;
+			blendInfo.srcAlphaBlendFactor = HyperGpu::BlendFactor::SRC_ALPHA;
+			blendInfo.dstAlphaBlendFactor = HyperGpu::BlendFactor::ONE_MINUS_SRC_ALPHA;
+			blendInfo.colorBlendOp = HyperGpu::BlendOp::ADD;
+			blendInfo.alphaBlendOp = HyperGpu::BlendOp::ADD;
+			break;
+		}
+		default:	LOG_ASSERT_INFO(false, "Invalid BlendType");
+	}
 }
 
 USING_RENDER_NAMESPACE_END

@@ -9,6 +9,15 @@
 
 #include "../shader/vulkan/ScreenPass/SCREEN_PASS_VERT.h"
 #include "../shader/vulkan/ScreenPass/SCREEN_PASS_FRAG.h"
+
+#if OPENGL_DESKTOP
+#include "../shader/gl/ScreenPass/SCREEN_PASS_VERT.h"
+#include "../shader/gl/ScreenPass/SCREEN_PASS_FRAG.h"
+#else
+#include "../shader/gles/ScreenPass/SCREEN_PASS_VERT.h"
+#include "../shader/gles/ScreenPass/SCREEN_PASS_FRAG.h"
+#endif
+
 #include "GpuPipeline.h"
 
 USING_RENDER_NAMESPACE_BEGIN
@@ -31,20 +40,15 @@ static std::vector<Vertex> gVertexData = {
 };
 
 ScreenPass::ScreenPass(HyperGpu::GpuDevice* gpuDevice) : BasePass(gpuDevice) {
-	HyperGpu::AttachmentInfo attachment[] = {
-		{
-			.type = HyperGpu::AttachmentType::COLOR,
-			.index = 0,
-			.format = HyperGpu::PixelFormat::R8G8B8A8
-		}
-	};
-
 	HyperGpu::RenderEnvInfo envInfo;
 	envInfo.shaderInfo = HyperGpu::ShaderInfo{
-		.pSpvVertexCode	   = SCREEN_PASS_VERT.data(),
-		.spvVertexCodeSize = SCREEN_PASS_VERT.size(),
-		.pSpvFragCode	   = SCREEN_PASS_FRAG.data(),
-		.spvFragCodeSize = SCREEN_PASS_FRAG.size(),
+		.pSpvVertexCode	   = SCREEN_PASS_VERT_SPV.data(),
+		.spvVertexCodeSize = SCREEN_PASS_VERT_SPV.size(),
+		.pSpvFragCode	   = SCREEN_PASS_FRAG_SPV.data(),
+		.spvFragCodeSize = SCREEN_PASS_FRAG_SPV.size(),
+
+		.pGlVertexCode = SCREEN_PASS_VERT_STR,
+		.pGlFragCode = SCREEN_PASS_FRAG_STR,
 	};
 	envInfo.rasterInfo = HyperGpu::RasterizationInfo{
 		.primitiveType = HyperGpu::PrimitiveType::TRIANGLE_STRIP,
@@ -52,16 +56,22 @@ ScreenPass::ScreenPass(HyperGpu::GpuDevice* gpuDevice) : BasePass(gpuDevice) {
 		.cullMode	   = HyperGpu::CullMode::BACK,
 		.frontFace	   = HyperGpu::FrontFace::CLOCK_WISE,
 	};
-	envInfo.pAttachment     = attachment;
-	envInfo.attachmentCount = std::size(attachment);
-	m_pPipeline             = m_pGpuDevice->GetPipelineManager()->CreateRenderPipeline(envInfo);
+	envInfo.attachments = {
+		{
+			.type = HyperGpu::AttachmentType::COLOR,
+			.index = 0,
+			.format = HyperGpu::PixelFormat::R8G8B8A8,
+			.loadOp = HyperGpu::AttachmentLoadOp::LOAD,
+			.storeOp = HyperGpu::AttachmentStoreOp::STORE,
+		}
+	};
+	m_pPipeline = m_pGpuDevice->GetPipelineManager()->CreateRenderPipeline(envInfo);
 
 	HyperGpu::InputAssemblerInfo inputAssemblerInfo{
 		.attributeCount = TO_U32(gVertexAttributes.size()),
 		.pAttributes = gVertexAttributes.data(),
 		.pVertexData = gVertexData.data(),
 		.vertexSize = TO_U32(gVertexData.size() * sizeof(Vertex)),
-		.primitiveType = HyperGpu::PrimitiveType::TRIANGLE_STRIP,
 		.vertexCount = TO_U32(gVertexData.size()),
 	};
 	m_pInputAssembler = m_pGpuDevice->GetResourceManager()->CreateInputAssembler(inputAssemblerInfo);
