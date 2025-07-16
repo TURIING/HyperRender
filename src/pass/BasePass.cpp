@@ -26,7 +26,12 @@ BasePass::~BasePass() {
  * @param image 纹理
  */
 void BasePass::UpdateImageBinding(const std::string& name, HyperGpu::Image2D* image) {
-	m_mapImage[name] = image;
+	if (!m_mapImage.contains(name)) {
+		m_mapImage[name] = { image };
+	}
+	else {
+		m_mapImage[name].push_back(image);
+	}
 }
 
 /**
@@ -39,14 +44,14 @@ void BasePass::UpdateBufferBinding(const std::string& name, HyperGpu::Buffer* bu
 }
 
 void BasePass::SetGlobalUniform(HyperGpu::Buffer* pGlobalBuffer) {
-	UpdateBufferBinding("GlobalInfo", pGlobalBuffer);
+	UpdateBufferBinding("globalInfo", pGlobalBuffer);
 }
 
 void BasePass::Draw(HyperGpu::GpuCmd* pCmd) {
 	std::vector<HyperGpu::ImageBinding> imageBindings;
 	imageBindings.reserve(m_mapImage.size());
 	std::ranges::transform(m_mapImage, std::back_inserter(imageBindings), [](auto &pair) {
-		return HyperGpu::ImageBinding {pair.second, pair.first.c_str()};
+		return HyperGpu::ImageBinding {pair.second.data(), TO_U32(pair.second.size()), pair.first.c_str()};
 	});
 
 	std::vector<HyperGpu::UniformBinding> bufferBindings;
@@ -65,7 +70,7 @@ void BasePass::Draw(HyperGpu::GpuCmd* pCmd) {
 	pCmd->Draw(drawInfo);
 }
 
-void BasePass::SetBlendType(BlendType blendType) {
+void BasePass::SetBlendType(BlendType blendType) const {
 	auto &blendInfo = m_pPipeline->renderEnvInfo.blendInfo;
 
 	switch (blendType) {

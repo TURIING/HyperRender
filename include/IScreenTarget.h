@@ -17,9 +17,7 @@ namespace HyperRender
 		Size  size;
 	};
 
-	class IScreenTarget : public RenderObject {
-
-	};
+	class IScreenTarget : public RenderObject {};
 }
 
 #endif //ISCREENTARGET_H

@@ -24,13 +24,13 @@ class BaseTool : virtual public ITool {
 public:
 	explicit BaseTool(HyperGpu::GpuDevice* pGpuDevice);
 	~BaseTool() override;
-	void UpdateSize(const Size &size);
 	void ClearColor(IDrawUnit *targetUnit, Color color) override;
 	NODISCARD DrawUnit *CreateDrawUnit(const Area &area) override;
 	void CopyDrawUnit(IDrawUnit *pSrcUnit, IDrawUnit *pDstUnit) override;
-	void FillDrawUnit(IDrawUnit *pUnit, const void *data, uint64_t size) override;
+	void FillDrawUnit(IDrawUnit *pUnit, const void *data, uint64_t size, const Offset2D &offset) override;
 
 protected:
+	void updateSize(const Size &size);
 	void clearColor(HyperGpu::GpuCmd *pCmd, IDrawUnit *targetUnit, Color color);
 	void begin() const;
 	void end(const std::vector<HyperGpu::Semaphore *> &signalSemaphore = {}) const;

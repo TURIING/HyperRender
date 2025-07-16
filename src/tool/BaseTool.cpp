@@ -29,12 +29,12 @@ BaseTool::~BaseTool() {
     m_pGpuDevice->SubRef();
 }
 
-void BaseTool::UpdateSize(const Size& size) {
+void BaseTool::updateSize(const Size& size) {
     const auto halfWidth  = size.width  / 2;
     const auto halfHeight = size.height / 2;
 
     Camera camera;
-    camera.SetOrtho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.0f, 1000.0f);
+    camera.SetOrtho(0, size.width, size.height, 0, -1.0f, 1000.0f);
 
     m_globalInfo.view = camera.GetViewMatrix();
     m_globalInfo.proj = camera.GetProjectionMatrix();
@@ -70,13 +70,21 @@ void BaseTool::CopyDrawUnit(IDrawUnit *pSrcUnit, IDrawUnit *pDstUnit) {
     });
 }
 
-void BaseTool::FillDrawUnit(IDrawUnit *pUnit, const void *data, uint64_t size) {
+void BaseTool::FillDrawUnit(IDrawUnit *pUnit, const void *data, uint64_t size, const Offset2D &offset) {
     LOG_ASSERT(pUnit);
 
     const auto unit = dynamic_cast<DrawUnit*>(pUnit);
     m_pGpuDevice->GetCmdManager()->WithSingleCmdBuffer([&](HyperGpu::GpuCmd* pCmd) {
         const auto image = unit->GetImage();
-        pCmd->CopyBufferToImage(image, data, size, std::bit_cast<HyperGpu::Area>(unit->GetArea()));
+        pCmd->CopyBufferToImage(
+            image,
+            data,
+            size,
+            {
+                std::bit_cast<HyperGpu::Offset2D>(offset),
+                std::bit_cast<HyperGpu::Size>(unit->GetSize())
+            }
+        );
     });
 }
 

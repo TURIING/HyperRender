@@ -34,8 +34,9 @@ public:
     IScreenTarget *CreateScreen(const HyperRender::PlatformWindowInfo &platformSurfaceInfo) override;
     void SetScreenTarget(IScreenTarget *target) override;
     void AddScreenObject(IDrawUnit *pObjUnit, const Area &area) override;
-    void BeginRenderToScreen(const Area &updateArea) override;
-    void EndRenderToScreen() override;
+    void Begin(const Area &updateArea) override;
+    void DoRender() override;
+    void End() override;
 
 private:
     void renderToScreen();
@@ -46,7 +47,6 @@ private:
     ScreenWindowTarget* m_pScreenTarget = nullptr;
     HyperGpu::Semaphore* m_pRenderSemaphore = nullptr;
     DrawUnit* m_pScreenTexture = nullptr;
-    DrawUnit* m_pTmpTexture = nullptr;
 };
 
 USING_RENDER_NAMESPACE_END

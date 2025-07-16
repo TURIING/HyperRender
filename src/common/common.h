@@ -28,7 +28,6 @@
 #include "Render.h"
 #include "RenderType.h"
 #include "LogManager.h"
-// #include "DrawUnit.h"
 
 template <typename T>
 uint32_t TO_U32(T value) {
@@ -47,6 +46,13 @@ int32_t TO_F32(T value) {
     static_assert(std::is_arithmetic_v<T>, "T must be numeric");
     return static_cast<float>(value);
 }
+
+template <typename T>
+struct Point {
+    T x;
+    T y;
+};
+using PointF = Point<float>;
 
 #define NODISCARD [[nodiscard]]
 

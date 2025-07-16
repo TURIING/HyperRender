@@ -14,10 +14,29 @@
 USING_RENDER_NAMESPACE_BEGIN
 
 class ScreenPass : public BasePass {
+    struct InstanceData {
+        alignas(8) glm::vec2 iOffset;
+        alignas(8) glm::vec2 iSize;
+        alignas(4) int iTextureIndex = 0;
+    };
+
+    struct LocalInfo {
+        alignas(8) glm::vec2 screenSize;
+    };
+
 public:
     explicit ScreenPass(HyperGpu::GpuDevice* gpuDevice);
 	~ScreenPass() override;
-    void SetScreenTexture(HyperGpu::Image2D* screenTexture);
+    void AddScreenTexture(HyperGpu::Image2D* screenTexture, const Offset2D& screenPos);
+    void ClearScreenTexture();
+    void Draw(HyperGpu::GpuCmd *pCmd) override;
+    void SetScreenSize(const Size &size);
+
+private:
+    std::vector<InstanceData> m_vecInstanceData;
+    HyperGpu::Buffer* m_pLocalInfoBuffer = nullptr;
+    LocalInfo m_localInfo;
+    bool m_isLocalInfoDirty = true;
 };
 
 USING_RENDER_NAMESPACE_END

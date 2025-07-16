@@ -18,17 +18,26 @@
 #include "../shader/gles/ScreenPass/SCREEN_PASS_FRAG.h"
 #endif
 
+#include "ScreenPass.h"
+
 #include "GpuPipeline.h"
+#include "../common/GpuHelper.h"
 
 USING_RENDER_NAMESPACE_BEGIN
 struct Vertex {
-	glm::vec2 aPos;
-	glm::vec2 aTexCoord;
+	glm::vec2 vPos;
+	glm::vec2 vTexCoord;
 };
 
 static std::vector<HyperGpu::VertexAttribute> gVertexAttributes = {
 	{ 0, HyperGpu::AttributeDataType::Vec2 },
 	{1, HyperGpu::AttributeDataType::Vec2 },
+};
+
+static std::vector<HyperGpu::VertexAttribute> gInstanceAttributes = {
+	{ 2, HyperGpu::AttributeDataType::Vec2 },
+	{ 3, HyperGpu::AttributeDataType::Vec2 },
+	{ 4, HyperGpu::AttributeDataType::Int },
 };
 
 static std::vector<Vertex> gVertexData = {
@@ -61,27 +70,61 @@ ScreenPass::ScreenPass(HyperGpu::GpuDevice* gpuDevice) : BasePass(gpuDevice) {
 			.type = HyperGpu::AttachmentType::COLOR,
 			.index = 0,
 			.format = HyperGpu::PixelFormat::R8G8B8A8,
-			.loadOp = HyperGpu::AttachmentLoadOp::LOAD,
+			.loadOp = HyperGpu::AttachmentLoadOp::CLEAR,
 			.storeOp = HyperGpu::AttachmentStoreOp::STORE,
 		}
 	};
 	m_pPipeline = m_pGpuDevice->GetPipelineManager()->CreateRenderPipeline(envInfo);
-
-	HyperGpu::InputAssemblerInfo inputAssemblerInfo{
-		.attributeCount = TO_U32(gVertexAttributes.size()),
-		.pAttributes = gVertexAttributes.data(),
-		.pVertexData = gVertexData.data(),
-		.vertexSize = TO_U32(gVertexData.size() * sizeof(Vertex)),
-		.vertexCount = TO_U32(gVertexData.size()),
-	};
-	m_pInputAssembler = m_pGpuDevice->GetResourceManager()->CreateInputAssembler(inputAssemblerInfo);
+	m_pLocalInfoBuffer = GpuHelper::CreateUniformBuffer(m_pGpuDevice, sizeof(LocalInfo));
 }
 
-ScreenPass::~ScreenPass() {
-}
+ScreenPass::~ScreenPass() {}
 
-void ScreenPass::SetScreenTexture(HyperGpu::Image2D* screenTexture) {
+void ScreenPass::AddScreenTexture(HyperGpu::Image2D* screenTexture, const Offset2D& screenPos) {
 	this->UpdateImageBinding("screenTex", screenTexture);
+	const auto size = screenTexture->GetSize();
+	m_vecInstanceData.push_back({
+		.iOffset = {screenPos.x, screenPos.y},
+		.iSize = {size.width, size.height},
+		.iTextureIndex = TO_I32(m_vecInstanceData.size()),
+	});
+}
+
+void ScreenPass::ClearScreenTexture() {
+	m_mapImage.clear();
+	m_vecInstanceData.clear();
+	m_pInputAssembler->SubRef();
+	m_pInputAssembler = nullptr;
+}
+
+void ScreenPass::Draw(HyperGpu::GpuCmd *pCmd) {
+	if (!m_pInputAssembler) {
+		HyperGpu::InstanceInputAssemblerInfo inputAssemblerInfo;
+		inputAssemblerInfo.attributeCount = TO_U32(gVertexAttributes.size()),
+		inputAssemblerInfo.pAttributes = gVertexAttributes.data(),
+		inputAssemblerInfo.pVertexData = gVertexData.data(),
+		inputAssemblerInfo.vertexSize = TO_U32(gVertexData.size() * sizeof(Vertex)),
+		inputAssemblerInfo.vertexCount = TO_U32(gVertexData.size()),
+		inputAssemblerInfo.pInstanceAttributes = gInstanceAttributes.data(),
+		inputAssemblerInfo.instanceAttributeCount = TO_U32(gInstanceAttributes.size()),
+		inputAssemblerInfo.pInstanceData = m_vecInstanceData.data(),
+		inputAssemblerInfo.instanceDataSize = TO_U32(m_vecInstanceData.size() * sizeof(InstanceData)),
+		inputAssemblerInfo.instanceCount = TO_U32(m_vecInstanceData.size()),
+		m_pInputAssembler = m_pGpuDevice->GetResourceManager()->CreateInputAssembler(inputAssemblerInfo);
+	}
+
+	if (m_isLocalInfoDirty) {
+		m_pLocalInfoBuffer->UpdateData(&m_localInfo, sizeof(LocalInfo));
+		UpdateBufferBinding("localInfo", m_pLocalInfoBuffer);
+		m_isLocalInfoDirty = false;
+	}
+
+	BasePass::Draw(pCmd);
+}
+
+void ScreenPass::SetScreenSize(const Size &size) {
+	m_localInfo.screenSize = glm::vec2(size.width, size.height);
+	m_isLocalInfoDirty = true;
 }
 
 USING_RENDER_NAMESPACE_END

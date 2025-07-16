@@ -35,35 +35,39 @@ void ScreenTool::SetScreenTarget(IScreenTarget* target) {
 }
 
 void ScreenTool::AddScreenObject(IDrawUnit *pObjUnit, const Area &area) {
-    m_pTmpTexture = dynamic_cast<DrawUnit *>(pObjUnit);
-    m_pTmpTexture->AddRef();
+    const auto unit = dynamic_cast<DrawUnit*>(pObjUnit);
+    m_pScreenPass->AddScreenTexture(unit->GetImage(), area.offset);
 }
 
-void ScreenTool::BeginRenderToScreen(const Area& updateArea) {
+void ScreenTool::Begin(const Area& updateArea) {
     m_renderArea = updateArea;
+    m_pScreenPass->SetScreenSize(updateArea.size);
+
     if (!m_pScreenTexture) {
         m_pScreenTexture = this->CreateDrawUnit(updateArea);
     }
+
     begin();
-    BaseTool::clearColor(m_pCmd, m_pScreenTexture, {0, 0, 1, 0.1});
-    m_pScreenPass->SetScreenTexture(m_pTmpTexture->GetImage());
+}
+
+void ScreenTool::DoRender() {
     m_pScreenPass->SetBlendType(BlendType::Normal);
     auto image = m_pScreenTexture->GetImage();
     HyperGpu::BeginRenderInfo beginInfo {
         .pPipeline = m_pScreenPass->GetPipeline(),
-        // .clearValue = { { HyperGpu::AttachmentType::COLOR, {0.0, 0.0, 1.0, 0.8 }}},
-        .renderArea = std::bit_cast<HyperGpu::Area>(updateArea),
+        .renderArea = std::bit_cast<HyperGpu::Area>(m_renderArea),
         .renderAttachmentType = HyperGpu::RenderAttachmentType::Image2D,
         .renderAttachment = {1, &image},
+        .clearValue = {{ .color = {1.0, 1.0, 1.0, 1}}},
     };
     m_pCmd->BeginRenderPass(beginInfo);
-    m_pCmd->SetViewport({0, 0, (float)updateArea.size.width, (float)updateArea.size.height});
-    m_pCmd->SetScissor({0, 0, updateArea.size.width, updateArea.size.height});
+    m_pCmd->SetViewport({0, 0, (float)m_renderArea.size.width, (float)m_renderArea.size.height});
+    m_pCmd->SetScissor({0, 0, m_renderArea.size.width, m_renderArea.size.height});
     m_pScreenPass->Draw(m_pCmd);
     m_pCmd->EndRenderPass();
 }
 
-void ScreenTool::EndRenderToScreen() {
+void ScreenTool::End() {
     end({m_pRenderSemaphore});
     renderToScreen();
 }

@@ -24,16 +24,14 @@ public:
 	void UpdateBufferBinding(const std::string &name, HyperGpu::Buffer* buffer);
     NODISCARD HyperGpu::Pipeline* GetPipeline() const { return m_pPipeline; }
 	void SetGlobalUniform(HyperGpu::Buffer* pGlobalBuffer);
-	void Draw(HyperGpu::GpuCmd* pCmd);
-	void SetBlendType(BlendType blendType);
+	virtual void Draw(HyperGpu::GpuCmd* pCmd);
+	void SetBlendType(BlendType blendType) const;
 
 protected:
 	HyperGpu::GpuDevice* m_pGpuDevice = nullptr;
     HyperGpu::Pipeline* m_pPipeline = nullptr;
 	HyperGpu::InputAssembler *m_pInputAssembler = nullptr;
-
-private:
-	std::unordered_map<std::string, HyperGpu::Image2D*> m_mapImage;
+	std::unordered_map<std::string, std::vector<HyperGpu::Image2D*>> m_mapImage;
 	std::unordered_map<std::string, HyperGpu::Buffer*> m_mapBuffer;
 };
 
