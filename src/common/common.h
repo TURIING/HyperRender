@@ -54,6 +54,8 @@ struct Point {
 };
 using PointF = Point<float>;
 
+#define BEGIN_CMD_DEBUG_LABEL(cmd, name) cmd->BeginDebugUtilsLabel(name);
+#define END_CMD_DEBUG_LABEL(cmd, name) cmd->EndDebugUtilsLabel();
 #define NODISCARD [[nodiscard]]
 
 #endif //COMMON_H

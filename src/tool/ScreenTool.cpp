@@ -51,6 +51,7 @@ void ScreenTool::Begin(const Area& updateArea) {
 }
 
 void ScreenTool::DoRender() {
+    BEGIN_CMD_DEBUG_LABEL(m_pCmd, "ScreenTool::DoRender");
     m_pScreenPass->SetBlendType(BlendType::Normal);
     auto image = m_pScreenTexture->GetImage();
     HyperGpu::BeginRenderInfo beginInfo {
@@ -65,6 +66,7 @@ void ScreenTool::DoRender() {
     m_pCmd->SetScissor({0, 0, m_renderArea.size.width, m_renderArea.size.height});
     m_pScreenPass->Draw(m_pCmd);
     m_pCmd->EndRenderPass();
+    END_CMD_DEBUG_LABEL(m_pCmd, "ScreenTool::DoRender");
 }
 
 void ScreenTool::End() {

@@ -20,11 +20,13 @@ void ScreenWindowTarget::RenderToScreen(const DrawToTargetInfo& info) {
     m_pScreenFence->Reset();
     
     m_pCmd->Begin();
+    BEGIN_CMD_DEBUG_LABEL(m_pCmd, "ScreenWindowTarget::RenderToScreen");
     HyperGpu::ImageBlitRange range {
         .srcArea = std::bit_cast<HyperGpu::Area>(info.srcArea),
         .dstArea = std::bit_cast<HyperGpu::Area>(info.dstArea)
     };
     m_pCmd->BlitImageToSurface(info.pImage, m_pSurface, &range, 1, HyperGpu::Filter::LINEAR);
+    END_CMD_DEBUG_LABEL(m_pCmd, "ScreenWindowTarget::RenderToScreen");
     m_pCmd->End();
 
     std::vector<HyperGpu::Semaphore*> waitSemaphore;
