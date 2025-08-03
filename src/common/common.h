@@ -29,6 +29,16 @@
 #include "RenderType.h"
 #include "LogManager.h"
 
+constexpr uint32_t gPixelFormatToSizeByte[] = {
+    4,              // R8G8B8A8
+    4,              // B8G8R8A8
+};
+
+constexpr int32_t gPixelFormatToChannelCount[] = {
+    4,              // R8G8B8A8
+    4,              // B8G8R8A8
+};
+
 template <typename T>
 uint32_t TO_U32(T value) {
     static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>, "T must be numeric or enum");

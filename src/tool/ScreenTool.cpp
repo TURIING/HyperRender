@@ -72,6 +72,7 @@ void ScreenTool::DoRender() {
 void ScreenTool::End() {
     end({m_pRenderSemaphore});
     renderToScreen();
+    BaseTool::SaveDrawUnit(m_pScreenTexture, "screen.png");
 }
 
 void ScreenTool::renderToScreen() {

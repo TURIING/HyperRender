@@ -28,6 +28,7 @@ public:
 	NODISCARD DrawUnit *CreateDrawUnit(const Area &area) override;
 	void CopyDrawUnit(IDrawUnit *pSrcUnit, IDrawUnit *pDstUnit) override;
 	void FillDrawUnit(IDrawUnit *pUnit, const void *data, uint64_t size, const Offset2D &offset) override;
+	void SaveDrawUnit(IDrawUnit *pUnit, const char *fileName) override;
 
 protected:
 	void updateSize(const Size &size);

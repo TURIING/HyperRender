@@ -114,7 +114,7 @@ void ScreenPass::Draw(HyperGpu::GpuCmd *pCmd) {
 	}
 
 	if (m_isLocalInfoDirty) {
-		m_pLocalInfoBuffer->UpdateData(&m_localInfo, sizeof(LocalInfo));
+		m_pLocalInfoBuffer->WriteData(&m_localInfo, sizeof(LocalInfo));
 		UpdateBufferBinding("localInfo", m_pLocalInfoBuffer);
 		m_isLocalInfoDirty = false;
 	}

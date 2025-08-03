@@ -9,6 +9,8 @@
 #include "BaseTool.h"
 #include "../common/Camera.h"
 #include "../common/GpuHelper.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb/stb_image_write.h"
 
 USING_RENDER_NAMESPACE_BEGIN
 BaseTool::BaseTool(HyperGpu::GpuDevice* pGpuDevice) : m_pGpuDevice(pGpuDevice) {
@@ -39,7 +41,7 @@ void BaseTool::updateSize(const Size& size) {
     m_globalInfo.view = camera.GetViewMatrix();
     m_globalInfo.proj = camera.GetProjectionMatrix();
 
-    m_pGlobalBuffer->UpdateData(reinterpret_cast<uint8_t*>(&m_globalInfo), sizeof(GlobalInfo));
+    m_pGlobalBuffer->WriteData(reinterpret_cast<uint8_t*>(&m_globalInfo), sizeof(GlobalInfo));
 }
 
 void BaseTool::ClearColor(IDrawUnit* targetUnit, Color color) {
@@ -86,6 +88,40 @@ void BaseTool::FillDrawUnit(IDrawUnit *pUnit, const void *data, uint64_t size, c
             }
         );
     });
+}
+
+void BaseTool::SaveDrawUnit(IDrawUnit *pUnit, const char *fileName) {
+    LOG_ASSERT(pUnit && fileName);
+    const auto unit = dynamic_cast<DrawUnit*>(pUnit);
+
+    const auto [width, height] = unit->GetSize();
+    const auto image = unit->GetImage();
+    auto pixelFormatSize = gPixelFormatToSizeByte[TO_I32(image->GetPixelFormat())];
+    auto pixelFormatChannelCount = gPixelFormatToChannelCount[TO_I32(image->GetPixelFormat())];
+    const auto bufferSize = pixelFormatSize * width * height;
+
+    auto stageBuffer = m_pGpuDevice->GetResourceManager()->CreateBuffer( {
+        .bufferType = HyperGpu::Buffer::TransferDst,
+        .bufferSize = bufferSize,
+        .data = nullptr,
+    });
+
+    m_pGpuDevice->GetCmdManager()->WithSingleCmdBuffer([&](HyperGpu::GpuCmd* pCmd) {
+        const HyperGpu::Area area {
+            .offset = { 0, 0 },
+            .size = std::bit_cast<HyperGpu::Size>(unit->GetArea().size)
+        };
+        pCmd->CopyImageToBuffer(image, stageBuffer, area);
+    });
+
+    void *pData = nullptr;
+    stageBuffer->Map(0, bufferSize, &pData);
+
+    const auto path = "/Users/turiing/Desktop/" + std::string(fileName);
+    stbi_write_png(path.c_str(), width, height, pixelFormatChannelCount, pData, width * pixelFormatSize);
+
+    stageBuffer->UnMap();
+    stageBuffer->SubRef();
 }
 
 void BaseTool::begin() const {
