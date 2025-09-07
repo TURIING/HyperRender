@@ -23,6 +23,16 @@ namespace HyperRender
     	bool operator>=(const Size& rhs) const {
     		return width >= rhs.width && height >= rhs.height;
     	}
+
+    	Size operator/(uint32_t v) const {
+    		return { width / v, height / v };
+    	}
+
+    	Size& operator/=(uint32_t v) {
+    		width  /= v;
+    		height /= v;
+    		return *this;
+    	}
     };
 
 	struct Offset2D {

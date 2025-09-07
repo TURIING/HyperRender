@@ -15,20 +15,25 @@
 USING_RENDER_NAMESPACE_BEGIN
 
 class RoundCornerPass;
+class DualKawaseBlurDownSamplePass;
+class DualKawaseBlurUpSamplePass;
+
 class EffectTool final : public IEffectTool, public BaseTool {
 public:
 	explicit EffectTool(HyperGpu::GpuDevice* pGpuDevice);
 	~EffectTool() override;
 	void SetRoundCorner(float radius) override;
+	void DoDualKawaseBlur(int interation, const Offset2D &offset);
 	void SetTargetUnit(IDrawUnit *pTargetUnit) override;
 	void Begin(const Area &renderArea) override;
-	void Render() override;
 	void End() override;
 	void RenderToUnit(IDrawUnit *resultUnit) override;
 
 private:
 	RoundCornerPass* m_pRoundCornerPass = nullptr;
-	IDrawUnit* m_pTargetUnit = nullptr;
+	DualKawaseBlurUpSamplePass* m_pDualKawaseBlurUpSamplePass = nullptr;
+	DualKawaseBlurDownSamplePass* m_pDualKawaseBlurDownSamplePass = nullptr;
+	DrawUnit* m_pTargetUnit = nullptr;
 	DrawUnit* m_pResultUnit = nullptr;
 };
 

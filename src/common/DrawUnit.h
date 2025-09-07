@@ -19,6 +19,7 @@ public:
     struct DrawUnitCreateInfo {
         Area area;
         HyperGpu::Sampler* pSampler = nullptr;
+        const char* pName = nullptr;
     };
 
 public:

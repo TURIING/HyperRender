@@ -16,7 +16,7 @@ namespace HyperRender {
     class ITool : public RenderObject {
     public:
         virtual void ClearColor(IDrawUnit* targetUnit, Color color) = 0;
-        virtual IDrawUnit* CreateDrawUnit(const Area& area) = 0;
+        virtual IDrawUnit* CreateDrawUnit(const Area& area, const char* name = nullptr) = 0;
         virtual void CopyDrawUnit(IDrawUnit* pSrcUnit, IDrawUnit* pDstUnit) = 0;
         virtual void FillDrawUnit(IDrawUnit* pUnit, const void *data, uint64_t size, const Offset2D &offset) = 0;
 	    virtual void SaveDrawUnit(IDrawUnit *pUnit, const char *fileName) = 0;

@@ -52,8 +52,8 @@ void BaseTool::ClearColor(IDrawUnit* targetUnit, Color color) {
     });
 }
 
-DrawUnit* BaseTool::CreateDrawUnit(const Area& area) {
-    return new DrawUnit(m_pGpuDevice, {area, m_pCommonSampler});
+DrawUnit* BaseTool::CreateDrawUnit(const Area& area, const char* name) {
+    return new DrawUnit(m_pGpuDevice, {area, m_pCommonSampler, name});
 }
 
 void BaseTool::CopyDrawUnit(IDrawUnit *pSrcUnit, IDrawUnit *pDstUnit) {
@@ -62,10 +62,14 @@ void BaseTool::CopyDrawUnit(IDrawUnit *pSrcUnit, IDrawUnit *pDstUnit) {
     const auto dstUnit = dynamic_cast<DrawUnit*>(pDstUnit);
 
     m_pGpuDevice->GetCmdManager()->WithSingleCmdBuffer([&](HyperGpu::GpuCmd* pCmd) {
+        HyperGpu::Area area {
+            {0, 0},
+            std::bit_cast<HyperGpu::Size>(pSrcUnit->GetTextureSize())
+        };
         std::vector<HyperGpu::ImageCopyRange> ranges = {
             {
-                .srcArea = std::bit_cast<HyperGpu::Area>(srcUnit->GetArea()),
-                .dstArea = std::bit_cast<HyperGpu::Area>(dstUnit->GetArea())
+                .srcArea = area,
+                .dstArea = area
             },
         };
         pCmd->CopyImage(srcUnit->GetImage(), dstUnit->GetImage(), ranges.data(), ranges.size());
@@ -93,11 +97,13 @@ void BaseTool::FillDrawUnit(IDrawUnit *pUnit, const void *data, uint64_t size, c
 void BaseTool::SaveDrawUnit(IDrawUnit *pUnit, const char *fileName) {
     LOG_ASSERT(pUnit && fileName);
     const auto unit = dynamic_cast<DrawUnit*>(pUnit);
+    SaveImage(unit->GetImage(), fileName);
+}
 
-    const auto [width, height] = unit->GetSize();
-    const auto image = unit->GetImage();
-    auto pixelFormatSize = gPixelFormatToSizeByte[TO_I32(image->GetPixelFormat())];
-    auto pixelFormatChannelCount = gPixelFormatToChannelCount[TO_I32(image->GetPixelFormat())];
+void BaseTool::SaveImage(HyperGpu::Image2D *pImage, const std::string &fileName) const {
+    const auto [width, height] = pImage->GetSize();
+    const auto pixelFormatSize = gPixelFormatToSizeByte[TO_I32(pImage->GetPixelFormat())];
+    const auto pixelFormatChannelCount = gPixelFormatToChannelCount[TO_I32(pImage->GetPixelFormat())];
     const auto bufferSize = pixelFormatSize * width * height;
 
     auto stageBuffer = m_pGpuDevice->GetResourceManager()->CreateBuffer( {
@@ -109,15 +115,15 @@ void BaseTool::SaveDrawUnit(IDrawUnit *pUnit, const char *fileName) {
     m_pGpuDevice->GetCmdManager()->WithSingleCmdBuffer([&](HyperGpu::GpuCmd* pCmd) {
         const HyperGpu::Area area {
             .offset = { 0, 0 },
-            .size = std::bit_cast<HyperGpu::Size>(unit->GetArea().size)
+            .size = pImage->GetSize(),
         };
-        pCmd->CopyImageToBuffer(image, stageBuffer, area);
+        pCmd->CopyImageToBuffer(pImage, stageBuffer, area);
     });
 
     void *pData = nullptr;
     stageBuffer->Map(0, bufferSize, &pData);
 
-    const auto path = "/Users/turiing/Desktop/" + std::string(fileName);
+    const auto path = "/Users/turiing/Desktop/" + fileName;
     stbi_write_png(path.c_str(), width, height, pixelFormatChannelCount, pData, width * pixelFormatSize);
 
     stageBuffer->UnMap();

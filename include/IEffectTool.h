@@ -28,7 +28,12 @@ public:
 	 */
 	virtual void SetRoundCorner(float radius) = 0;
 
-	virtual void Render() = 0;
+	/**
+	 * DualKawaseBlur
+	 * @param interation 迭代次数
+	 * @param offset 偏移
+	 */
+	virtual void DoDualKawaseBlur(int interation, const Offset2D &offset) = 0;
 
 	virtual void End() = 0;
 

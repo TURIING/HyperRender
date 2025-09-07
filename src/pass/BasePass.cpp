@@ -26,12 +26,12 @@ BasePass::~BasePass() {
  * @param image 纹理
  */
 void BasePass::UpdateImageBinding(const std::string& name, HyperGpu::Image2D* image) {
-	if (!m_mapImage.contains(name)) {
-		m_mapImage[name] = { image };
-	}
-	else {
-		m_mapImage[name].push_back(image);
-	}
+	m_mapImage[name] = { image };
+	// if (!m_mapImage.contains(name)) {
+	// }
+	// else {
+	// 	m_mapImage[name].push_back(image);
+	// }
 }
 
 /**

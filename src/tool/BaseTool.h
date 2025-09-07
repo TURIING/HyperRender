@@ -25,10 +25,11 @@ public:
 	explicit BaseTool(HyperGpu::GpuDevice* pGpuDevice);
 	~BaseTool() override;
 	void ClearColor(IDrawUnit *targetUnit, Color color) override;
-	NODISCARD DrawUnit *CreateDrawUnit(const Area &area) override;
+	NODISCARD DrawUnit *CreateDrawUnit(const Area &area, const char* name = nullptr) override;
 	void CopyDrawUnit(IDrawUnit *pSrcUnit, IDrawUnit *pDstUnit) override;
 	void FillDrawUnit(IDrawUnit *pUnit, const void *data, uint64_t size, const Offset2D &offset) override;
 	void SaveDrawUnit(IDrawUnit *pUnit, const char *fileName) override;
+	void SaveImage(HyperGpu::Image2D* pImage, const std::string &fileName) const;
 
 protected:
 	void updateSize(const Size &size);
