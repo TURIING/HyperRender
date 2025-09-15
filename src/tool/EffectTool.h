@@ -17,13 +17,15 @@ USING_RENDER_NAMESPACE_BEGIN
 class RoundCornerPass;
 class DualKawaseBlurDownSamplePass;
 class DualKawaseBlurUpSamplePass;
+class GaussianBlurPass;
 
 class EffectTool final : public IEffectTool, public BaseTool {
 public:
 	explicit EffectTool(HyperGpu::GpuDevice* pGpuDevice);
 	~EffectTool() override;
 	void SetRoundCorner(float radius) override;
-	void DoDualKawaseBlur(int interation, const Offset2D &offset);
+	void DoDualKawaseBlur(int interation, const Offset2D &offset) override;
+	void DoGaussianBlur();
 	void SetTargetUnit(IDrawUnit *pTargetUnit) override;
 	void Begin(const Area &renderArea) override;
 	void End() override;
@@ -33,6 +35,7 @@ private:
 	RoundCornerPass* m_pRoundCornerPass = nullptr;
 	DualKawaseBlurUpSamplePass* m_pDualKawaseBlurUpSamplePass = nullptr;
 	DualKawaseBlurDownSamplePass* m_pDualKawaseBlurDownSamplePass = nullptr;
+	GaussianBlurPass* m_pGaussianBlurPass = nullptr;
 	DrawUnit* m_pTargetUnit = nullptr;
 	DrawUnit* m_pResultUnit = nullptr;
 };

@@ -17,16 +17,17 @@ HyperGpu::Buffer* HyperRender::GpuHelper::CreateUniformBuffer(HyperGpu::GpuDevic
 }
 
 HyperGpu::Image2D* GpuHelper::CreateImage(HyperGpu::GpuDevice *pDevice, const Size &size, HyperGpu::Sampler *pSampler, const char *name, HyperGpu::PixelFormat format) {
-    HyperGpu::Image2D::Image2DCreateInfo createInfo = {
-        .size = std::bit_cast<HyperGpu::Size>(size),
-        .pSampler = pSampler,
-        .objName = name,
-        .format = format,
-    };
+    HyperGpu::Image2D::Image2DCreateInfo createInfo;
+    createInfo.size = std::bit_cast<HyperGpu::Size>(size);
+    createInfo.pSampler = pSampler;
+    createInfo.objName = name;
+    createInfo.format = format;
+    createInfo.usage = HyperGpu::ImageUsageFlags::SAMPLED | HyperGpu::ImageUsageFlags::COLOR_ATTACHMENT | HyperGpu::ImageUsageFlags::TRANS_DST | HyperGpu::ImageUsageFlags::TRANS_SRC;
+    createInfo.aspect = HyperGpu::ImageAspectFlags::Color;
     return pDevice->GetResourceManager()->CreateImage2D(createInfo);
 }
 
-void GpuHelper::CopyImage(HyperGpu::GpuDevice* pDevice, HyperGpu::Image2D *pSrc, HyperGpu::Image2D *pDst, const Offset2D &srcOffset, const Offset2D &dstOffset) {
+void GpuHelper::CopyImage(HyperGpu::GpuDevice* pDevice, HyperGpu::GpuCmd* pCmd, HyperGpu::Image2D *pSrc, HyperGpu::Image2D *pDst, const Offset2D &srcOffset, const Offset2D &dstOffset) {
     const auto srcSize = pSrc->GetSize();
     const HyperGpu::Area srcArea {
         std::bit_cast<HyperGpu::Offset2D>(srcOffset),
@@ -44,9 +45,15 @@ void GpuHelper::CopyImage(HyperGpu::GpuDevice* pDevice, HyperGpu::Image2D *pSrc,
             .dstArea = dstArea
         },
     };
-    pDevice->GetCmdManager()->WithSingleCmdBuffer([&](HyperGpu::GpuCmd* pCmd) {
+
+    if (pCmd) {
         pCmd->CopyImage(pSrc, pDst, ranges.data(), ranges.size());
-    });
+    }
+    else {
+        pDevice->GetCmdManager()->WithSingleCmdBuffer([&](HyperGpu::GpuCmd* pCmd) {
+            pCmd->CopyImage(pSrc, pDst, ranges.data(), ranges.size());
+        });
+    }
 }
 
 USING_RENDER_NAMESPACE_END

@@ -62,7 +62,7 @@ DualKawaseBlurDownSamplePass::DualKawaseBlurDownSamplePass(HyperGpu::GpuDevice* 
 		}
 	};
 	envInfo.objName = "DualKawaseBlurDownSamplePass";
-	m_pPipeline = m_pGpuDevice->GetPipelineManager()->CreateRenderPipeline(envInfo);
+	m_pPipeline = m_pGpuDevice->GetPipelineManager()->CreateGraphicPipeline(envInfo);
 	m_pLocalInfoBuffer0 = GpuHelper::CreateUniformBuffer(m_pGpuDevice, sizeof(LocalInfo));
 	m_pLocalInfoBuffer1 = GpuHelper::CreateUniformBuffer(m_pGpuDevice, sizeof(LocalInfo));
 	m_pLocalInfoBuffer2 = GpuHelper::CreateUniformBuffer(m_pGpuDevice, sizeof(LocalInfo));

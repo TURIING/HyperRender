@@ -70,6 +70,32 @@ void BasePass::Draw(HyperGpu::GpuCmd* pCmd) {
 	pCmd->Draw(drawInfo);
 }
 
+void BasePass::Dispatch(HyperGpu::GpuCmd *pCmd, uint32_t x, uint32_t y, uint32_t z) {
+	std::vector<HyperGpu::ImageBinding> imageBindings;
+	imageBindings.reserve(m_mapImage.size());
+	std::ranges::transform(m_mapImage, std::back_inserter(imageBindings), [](auto &pair) {
+		return HyperGpu::ImageBinding {pair.second.data(), TO_U32(pair.second.size()), pair.first.c_str()};
+	});
+
+	std::vector<HyperGpu::UniformBinding> bufferBindings;
+	bufferBindings.reserve(m_mapBuffer.size());
+	std::ranges::transform(m_mapBuffer.begin(), m_mapBuffer.end(), std::back_inserter(bufferBindings), [](auto &pair) {
+		return HyperGpu::UniformBinding {pair.second,  pair.first.c_str()};
+	});
+
+	HyperGpu::DispatchInfo dispatchInfo {
+		.pPipeline = m_pPipeline,
+		.pUniformBinding = bufferBindings.data(),
+		.uniformBindingCount = TO_U32(bufferBindings.size()),
+		.pImageBinding = imageBindings.data(),
+		.imageBindingCount = TO_U32(imageBindings.size()),
+		.groupCountX = x,
+		.groupCountY = y,
+		.groupCountZ = z
+	};
+	pCmd->Dispatch(dispatchInfo);
+}
+
 void BasePass::SetBlendType(BlendType blendType) const {
 	auto &blendInfo = m_pPipeline->renderEnvInfo.blendInfo;
 

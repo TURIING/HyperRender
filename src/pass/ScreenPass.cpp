@@ -74,7 +74,7 @@ ScreenPass::ScreenPass(HyperGpu::GpuDevice* gpuDevice) : BasePass(gpuDevice) {
 			.storeOp = HyperGpu::AttachmentStoreOp::STORE,
 		}
 	};
-	m_pPipeline = m_pGpuDevice->GetPipelineManager()->CreateRenderPipeline(envInfo);
+	m_pPipeline = m_pGpuDevice->GetPipelineManager()->CreateGraphicPipeline(envInfo);
 	m_pLocalInfoBuffer = GpuHelper::CreateUniformBuffer(m_pGpuDevice, sizeof(LocalInfo));
 }
 

@@ -27,6 +27,9 @@ BaseTool::~BaseTool() {
     m_pGlobalBuffer->SubRef();
     m_pRenderFence->SubRef();
     m_pRenderQueue->SubRef();
+    if (m_pComputeQueue) {
+        m_pComputeQueue->SubRef();
+    }
     m_pCmd->SubRef();
     m_pGpuDevice->SubRef();
 }

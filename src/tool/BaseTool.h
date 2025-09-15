@@ -42,12 +42,13 @@ protected:
 				   HyperGpu::Fence *pFence) const;
 
 protected:
-	HyperGpu::GpuCmd*    m_pCmd           = nullptr;
-	HyperGpu::Sampler*   m_pCommonSampler = nullptr;
+	HyperGpu::GpuCmd* m_pCmd           = nullptr;
+	HyperGpu::Sampler* m_pCommonSampler = nullptr;
 	HyperGpu::GpuDevice* m_pGpuDevice     = nullptr;
 	Area m_renderArea;
-	HyperGpu::Fence *m_pRenderFence = nullptr;
-	HyperGpu::Queue *m_pRenderQueue = nullptr;
+	HyperGpu::Fence* m_pRenderFence = nullptr;
+	HyperGpu::Queue* m_pRenderQueue = nullptr;
+	HyperGpu::Queue* m_pComputeQueue = nullptr;			// 预留成员，需要派生类自己创建
 	HyperGpu::Buffer* m_pGlobalBuffer = nullptr;
 
 private:

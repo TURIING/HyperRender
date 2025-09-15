@@ -35,6 +35,8 @@ public:
 	 */
 	virtual void DoDualKawaseBlur(int interation, const Offset2D &offset) = 0;
 
+	virtual void DoGaussianBlur() = 0;
+
 	virtual void End() = 0;
 
 	/**

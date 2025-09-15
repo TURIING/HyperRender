@@ -9,6 +9,7 @@
 #include "../pass/effect/RoundCornerPass.h"
 #include "../pass/effect/DualKawaseBlurDownSamplePass.h"
 #include "../pass/effect/DualKawaseBlurUpSamplePass.h"
+#include "../pass/effect/GaussianBlurPass.h"
 #include "../common/GpuHelper.h"
 
 USING_RENDER_NAMESPACE_BEGIN
@@ -17,6 +18,7 @@ EffectTool::EffectTool(HyperGpu::GpuDevice* pGpuDevice): BaseTool(pGpuDevice) {
     // m_pRoundCornerPass = new RoundCornerPass(m_pGpuDevice);
     m_pDualKawaseBlurUpSamplePass = new DualKawaseBlurUpSamplePass(m_pGpuDevice);
     m_pDualKawaseBlurDownSamplePass = new DualKawaseBlurDownSamplePass(m_pGpuDevice);
+    m_pGaussianBlurPass = new GaussianBlurPass(pGpuDevice);
 }
 
 EffectTool::~EffectTool() {
@@ -26,6 +28,7 @@ EffectTool::~EffectTool() {
     // m_pRoundCornerPass->SubRef();
     m_pDualKawaseBlurUpSamplePass->SubRef();
     m_pDualKawaseBlurDownSamplePass->SubRef();
+    m_pGaussianBlurPass->SubRef();
 }
 
 void EffectTool::SetRoundCorner(float radius) {
@@ -49,7 +52,7 @@ void EffectTool::DoDualKawaseBlur(int interation, const Offset2D &offset) {
         vecImg.push_back(pImage);
     }
 
-    GpuHelper::CopyImage(m_pGpuDevice, m_pTargetUnit->GetImage(), vecImg[0]);
+    GpuHelper::CopyImage(m_pGpuDevice, m_pCmd, m_pTargetUnit->GetImage(), vecImg[0]);
 
     for (auto i = 0; i < interation; i++) {
         auto image = vecImg[i+1];
@@ -88,6 +91,37 @@ void EffectTool::DoDualKawaseBlur(int interation, const Offset2D &offset) {
         m_pDualKawaseBlurUpSamplePass->Draw(m_pCmd, interation - i);
         m_pCmd->EndRenderPass();
     }
+}
+
+void EffectTool::DoGaussianBlur() {
+    HyperGpu::Image2D::Image2DCreateInfo inputCreateInfo;
+    inputCreateInfo.aspect = HyperGpu::ImageAspectFlags::Color;
+    inputCreateInfo.usage = HyperGpu::ImageUsageFlags::STORAGE | HyperGpu::ImageUsageFlags::TRANS_DST | HyperGpu::ImageUsageFlags::TRANS_SRC;
+    inputCreateInfo.size = std::bit_cast<HyperGpu::Size>(m_pTargetUnit->GetSize());
+    inputCreateInfo.format = HyperGpu::PixelFormat::R8G8B8A8;
+    inputCreateInfo.pSampler = m_pCommonSampler;
+    inputCreateInfo.objName = "GaussianBlurInputImage";
+    auto inputImage = m_pGpuDevice->GetResourceManager()->CreateImage2D(inputCreateInfo);
+
+    HyperGpu::Image2D::Image2DCreateInfo outputCreateInfo;
+    outputCreateInfo.aspect = HyperGpu::ImageAspectFlags::Color;
+    outputCreateInfo.usage = HyperGpu::ImageUsageFlags::STORAGE | HyperGpu::ImageUsageFlags::TRANS_DST | HyperGpu::ImageUsageFlags::TRANS_SRC;
+    outputCreateInfo.size = std::bit_cast<HyperGpu::Size>(m_pTargetUnit->GetSize());
+    outputCreateInfo.format = HyperGpu::PixelFormat::R8G8B8A8;
+    outputCreateInfo.pSampler = m_pCommonSampler;
+    outputCreateInfo.objName = "GaussianBlurOutputImage";
+    auto outputImage = m_pGpuDevice->GetResourceManager()->CreateImage2D(outputCreateInfo);
+
+    GpuHelper::CopyImage(m_pGpuDevice, m_pCmd, m_pTargetUnit->GetImage(), inputImage);
+
+    m_pGaussianBlurPass->SetTargetImage(inputImage);
+    m_pGaussianBlurPass->SetOutputImage(outputImage);
+
+    uint32_t groupX = (m_pTargetUnit->GetImage()->GetSize().width  + 15) / 16;
+    uint32_t groupY = (m_pTargetUnit->GetImage()->GetSize().height + 15) / 16;
+    m_pGaussianBlurPass->Dispatch(m_pCmd, groupX, groupY, 1);
+
+    GpuHelper::CopyImage(m_pGpuDevice, m_pCmd, outputImage, m_pResultUnit->GetImage());
 }
 
 void EffectTool::SetTargetUnit(IDrawUnit *pTargetUnit) {

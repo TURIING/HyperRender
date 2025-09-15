@@ -61,7 +61,7 @@ RoundCornerPass::RoundCornerPass(HyperGpu::GpuDevice* pGpuDevice): BasePass(pGpu
         }
     };
 
-    m_pPipeline = m_pGpuDevice->GetPipelineManager()->CreateRenderPipeline(envInfo);
+    m_pPipeline = m_pGpuDevice->GetPipelineManager()->CreateGraphicPipeline(envInfo);
 
     const HyperGpu::InputAssemblerInfo inputAssemblerInfo{
         .attributeCount = TO_U32(gVertexAttributes.size()),

@@ -25,6 +25,7 @@ public:
     NODISCARD HyperGpu::Pipeline* GetPipeline() const { return m_pPipeline; }
 	void SetGlobalUniform(HyperGpu::Buffer* pGlobalBuffer);
 	virtual void Draw(HyperGpu::GpuCmd* pCmd);
+	virtual void Dispatch(HyperGpu::GpuCmd* pCmd, uint32_t x, uint32_t y, uint32_t z);
 	void SetBlendType(BlendType blendType) const;
 
 protected:

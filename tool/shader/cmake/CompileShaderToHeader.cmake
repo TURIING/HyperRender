@@ -85,7 +85,7 @@ function(COMPILE_ALL_SHADER input_dir output_dir)
     MAKE_DIR_FORCE(${output_dir}/gl)
 
     # 获取所有的 .vert 和 .frag 文件（包括子目录）
-    file(GLOB_RECURSE shaders "${input_dir}/*.vert" "${input_dir}/*.frag")
+    file(GLOB_RECURSE shaders "${input_dir}/*.vert" "${input_dir}/*.frag" "${input_dir}/*.comp")
     if(NOT shaders)
         message(WARNING "Unable to find any shader file, automatically quit compilation.")
         return()
