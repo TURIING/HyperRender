@@ -56,10 +56,10 @@ void ScreenTool::DoRender() {
     auto image = m_pScreenTexture->GetImage();
     HyperGpu::BeginRenderInfo beginInfo {
         .pPipeline = m_pScreenPass->GetPipeline(),
+        .clearValue = {{ .color = {1.0, 1.0, 1.0, 1}}},
         .renderArea = std::bit_cast<HyperGpu::Area>(m_renderArea),
         .renderAttachmentType = HyperGpu::RenderAttachmentType::Image2D,
         .renderAttachment = {1, &image},
-        .clearValue = {{ .color = {1.0, 1.0, 1.0, 1}}},
     };
     m_pCmd->BeginRenderPass(beginInfo);
     m_pCmd->SetViewport({0, 0, (float)m_renderArea.size.width, (float)m_renderArea.size.height});

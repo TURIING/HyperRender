@@ -51,7 +51,9 @@ void BaseTool::ClearColor(IDrawUnit* targetUnit, Color color) {
 	const auto unit = dynamic_cast<DrawUnit*>(targetUnit);
 
 	m_pGpuDevice->GetCmdManager()->WithSingleCmdBuffer([&](HyperGpu::GpuCmd* pCmd) {
+    	pCmd->BeginDebugUtilsLabel("BaseTool::ClearColor");
 		pCmd->ClearColorImage(unit->GetImage(), std::bit_cast<HyperGpu::Color>(color));
+		pCmd->EndDebugUtilsLabel();
     });
 }
 
@@ -75,7 +77,9 @@ void BaseTool::CopyDrawUnit(IDrawUnit *pSrcUnit, IDrawUnit *pDstUnit) {
                 .dstArea = area
             },
         };
+    	pCmd->BeginDebugUtilsLabel("BaseTool::CopyDrawUnit");
         pCmd->CopyImage(srcUnit->GetImage(), dstUnit->GetImage(), ranges.data(), ranges.size());
+    	pCmd->EndDebugUtilsLabel();
     });
 }
 
@@ -85,6 +89,7 @@ void BaseTool::FillDrawUnit(IDrawUnit *pUnit, const void *data, uint64_t size, c
     const auto unit = dynamic_cast<DrawUnit*>(pUnit);
     m_pGpuDevice->GetCmdManager()->WithSingleCmdBuffer([&](HyperGpu::GpuCmd* pCmd) {
         const auto image = unit->GetImage();
+    	pCmd->BeginDebugUtilsLabel("BaseTool::FillDrawUnit");
         pCmd->CopyBufferToImage(
             image,
             data,
@@ -94,6 +99,7 @@ void BaseTool::FillDrawUnit(IDrawUnit *pUnit, const void *data, uint64_t size, c
                 std::bit_cast<HyperGpu::Size>(unit->GetSize())
             }
         );
+    	pCmd->EndDebugUtilsLabel();
     });
 }
 
@@ -120,13 +126,15 @@ void BaseTool::SaveImage(HyperGpu::Image2D *pImage, const std::string &fileName)
             .offset = { 0, 0 },
             .size = pImage->GetSize(),
         };
+    	pCmd->BeginDebugUtilsLabel("BaseTool::SaveImage");
         pCmd->CopyImageToBuffer(pImage, stageBuffer, area);
+    	pCmd->EndDebugUtilsLabel();
     });
 
     void *pData = nullptr;
     stageBuffer->Map(0, bufferSize, &pData);
 
-    const auto path = "/Users/turiing/Desktop/" + fileName;
+    const auto path = "C:/Users/TURIING/Desktop/" + fileName;
     stbi_write_png(path.c_str(), width, height, pixelFormatChannelCount, pData, width * pixelFormatSize);
 
     stageBuffer->UnMap();

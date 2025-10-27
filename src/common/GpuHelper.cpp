@@ -10,10 +10,17 @@
 USING_RENDER_NAMESPACE_BEGIN
 
 HyperGpu::Buffer* HyperRender::GpuHelper::CreateUniformBuffer(HyperGpu::GpuDevice* pDevice, uint32_t size) {
-    return pDevice->GetResourceManager()->CreateBuffer({
-        .bufferType = HyperGpu::Buffer::Uniform,
-        .bufferSize = size,
-    });
+	return pDevice->GetResourceManager()->CreateBuffer({
+		.bufferType = HyperGpu::Buffer::Uniform,
+		.bufferSize = size,
+	});
+}
+
+HyperGpu::Buffer* GpuHelper::CreateShaderStorageBuffer(HyperGpu::GpuDevice* pDevice, uint32_t size) {
+	return pDevice->GetResourceManager()->CreateBuffer({
+		.bufferType = HyperGpu::Buffer::ShaderStorage,
+		.bufferSize = size,
+	});
 }
 
 HyperGpu::Image2D* GpuHelper::CreateImage(HyperGpu::GpuDevice *pDevice, const Size &size, HyperGpu::Sampler *pSampler, const char *name, HyperGpu::PixelFormat format) {

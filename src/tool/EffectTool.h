@@ -18,6 +18,7 @@ class RoundCornerPass;
 class DualKawaseBlurDownSamplePass;
 class DualKawaseBlurUpSamplePass;
 class GaussianBlurPass;
+class StrokePass;
 
 class EffectTool final : public IEffectTool, public BaseTool {
 public:
@@ -26,6 +27,7 @@ public:
 	void SetRoundCorner(float radius) override;
 	void DoDualKawaseBlur(int interation, const Offset2D &offset) override;
 	void DoGaussianBlur();
+	void DoStroke() override;
 	void SetTargetUnit(IDrawUnit *pTargetUnit) override;
 	void Begin(const Area &renderArea) override;
 	void End() override;
@@ -36,6 +38,7 @@ private:
 	DualKawaseBlurUpSamplePass* m_pDualKawaseBlurUpSamplePass = nullptr;
 	DualKawaseBlurDownSamplePass* m_pDualKawaseBlurDownSamplePass = nullptr;
 	GaussianBlurPass* m_pGaussianBlurPass = nullptr;
+	StrokePass* m_pStrokePass = nullptr;
 	DrawUnit* m_pTargetUnit = nullptr;
 	DrawUnit* m_pResultUnit = nullptr;
 };
