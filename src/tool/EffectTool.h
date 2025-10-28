@@ -41,6 +41,7 @@ private:
 	StrokePass* m_pStrokePass = nullptr;
 	DrawUnit* m_pTargetUnit = nullptr;
 	DrawUnit* m_pResultUnit = nullptr;
+	HyperGpu::Image2D* m_pOutputImage = nullptr;
 };
 
 USING_RENDER_NAMESPACE_END

@@ -37,6 +37,7 @@ void StrokePass::SetOutputImage(HyperGpu::Image2D* image) {
 void StrokePass::SetStrokeInfo(const std::vector<Stroke>& vecStroke, const std::vector<Circle>& vecCircle) {
 	m_localInfo.numStrokes = vecStroke.size();
 	m_pLocalInfoBuffer->WriteData(&m_localInfo, sizeof(LocalInfo));
+	UpdateBufferBinding("localInfo", m_pLocalInfoBuffer);
 
 	const auto sizeStroke = sizeof(Stroke) * vecStroke.size();
 	m_pStrokeBuffer = GpuHelper::CreateShaderStorageBuffer(m_pGpuDevice, sizeStroke);
@@ -50,6 +51,9 @@ void StrokePass::SetStrokeInfo(const std::vector<Stroke>& vecStroke, const std::
 	m_pCircleBuffer->Map(0, sizeCircle, &pData);
 	memcpy(pData, vecCircle.data(), sizeCircle);
 	m_pCircleBuffer->UnMap();
+
+	UpdateBufferBinding("strokesBuf", m_pStrokeBuffer);
+	UpdateBufferBinding("circlesBuf", m_pCircleBuffer);
 }
 
 USING_RENDER_NAMESPACE_END

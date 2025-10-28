@@ -1,7 +1,7 @@
 #version 450
 
 // 输入图像：只读
-layout(set = 0, binding = 0, rgba8) uniform readonly image2D inputImage;
+//layout(set = 0, binding = 0, rgba8) uniform readonly image2D inputImage;
 
 // 输出图像：可写
 layout(set = 0, binding = 1, rgba8) uniform writeonly image2D outputImage;
@@ -12,11 +12,11 @@ void main() {
     ivec2 coord = ivec2(gl_GlobalInvocationID.xy);
 
     // 读取像素
-    vec4 color = imageLoad(inputImage, coord);
+//    vec4 color = imageLoad(inputImage, coord);
 
     // 灰度化公式 (加权平均)
-    float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+//    float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
 
     // 写回输出图像
-    imageStore(outputImage, coord, vec4(gray, gray, gray, color.a));
+//    imageStore(outputImage, coord, vec4(gray, gray, gray, color.a));
 }

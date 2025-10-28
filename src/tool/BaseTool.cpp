@@ -134,7 +134,7 @@ void BaseTool::SaveImage(HyperGpu::Image2D *pImage, const std::string &fileName)
     void *pData = nullptr;
     stageBuffer->Map(0, bufferSize, &pData);
 
-    const auto path = "C:/Users/TURIING/Desktop/" + fileName;
+    const auto path = "/Users/turiing/Desktop/" + fileName;
     stbi_write_png(path.c_str(), width, height, pixelFormatChannelCount, pData, width * pixelFormatSize);
 
     stageBuffer->UnMap();

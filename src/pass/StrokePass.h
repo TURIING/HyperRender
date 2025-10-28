@@ -16,18 +16,18 @@ class StrokePass: public BasePass {
 		int width;
 		int height;
 		float aa = 1.5;
-		glm::vec4 strokeColor; // r,g,b,a
+		glm::vec4 strokeColor = {1.0, 0.0, 0.0, 1.0}; // r,g,b,a
 	};
 
 public:
 	struct Circle {
-		glm::vec2 center;
-		float radius;
+		alignas(8) glm::vec2 center;
+		alignas(4) float radius;
 	};
 
 	struct Stroke {
-		int numCircles;
-		int startIndex; // circles 数组起始位置
+		alignas(4) int numCircles;
+		alignas(4) int startIndex; // circles 数组起始位置
 	};
 
 	explicit StrokePass(HyperGpu::GpuDevice* pDevice);

@@ -12,15 +12,32 @@
 #include "../pass/effect/GaussianBlurPass.h"
 #include "../pass/StrokePass.h"
 #include "../common/GpuHelper.h"
+#include <fstream>
+#include <sstream>
+
 
 USING_RENDER_NAMESPACE_BEGIN
+std::vector<StrokePass::Circle> gVecCircle;
 
 EffectTool::EffectTool(HyperGpu::GpuDevice* pGpuDevice): BaseTool(pGpuDevice) {
     // m_pRoundCornerPass = new RoundCornerPass(m_pGpuDevice);
     m_pDualKawaseBlurUpSamplePass = new DualKawaseBlurUpSamplePass(m_pGpuDevice);
     m_pDualKawaseBlurDownSamplePass = new DualKawaseBlurDownSamplePass(m_pGpuDevice);
-    m_pGaussianBlurPass = new GaussianBlurPass(pGpuDevice);
+    // m_pGaussianBlurPass = new GaussianBlurPass(pGpuDevice);
 	m_pStrokePass = new StrokePass(pGpuDevice);
+
+	gVecCircle.reserve(100*100*10);
+	std::ifstream in("data.txt");
+	std::string line;
+	while (std::getline(in, line)) {
+		std::stringstream ss(line);
+		int a, b;
+		char comma;
+		if (ss >> a >> comma >> b && comma == ',') {
+			gVecCircle.emplace_back(glm::vec2(a,b), 20.0);
+		}
+	}
+	in.close();
 }
 
 EffectTool::~EffectTool() {
@@ -132,23 +149,25 @@ void EffectTool::DoGaussianBlur() {
 	m_pCmd->EndDebugUtilsLabel();
 }
 
+
+
 void EffectTool::DoStroke() {
-	HyperGpu::Image2D::Image2DCreateInfo outputCreateInfo;
-	outputCreateInfo.aspect	  = HyperGpu::ImageAspectFlags::Color;
-	outputCreateInfo.usage	  = HyperGpu::ImageUsageFlags::STORAGE | HyperGpu::ImageUsageFlags::TRANS_DST | HyperGpu::ImageUsageFlags::TRANS_SRC;
-	outputCreateInfo.size	  = std::bit_cast<HyperGpu::Size>(m_pTargetUnit->GetSize());
-	outputCreateInfo.format	  = HyperGpu::PixelFormat::R8G8B8A8;
-	outputCreateInfo.pSampler = m_pCommonSampler;
-	outputCreateInfo.objName  = "StrokeOutputImage";
-	auto outputImage		  = m_pGpuDevice->GetResourceManager()->CreateImage2D(outputCreateInfo);
+	m_pCmd->BeginDebugUtilsLabel("EffectTool::DoStroke");
 
-	m_pStrokePass->SetOutputImage(outputImage);
+	LOG_INFO("circle count {}", gVecCircle.size());
+	std::vector<StrokePass::Stroke> strokes;
+	for (auto i = 0; i < gVecCircle.size()/200; ++i) {
+		strokes.push_back({200, 200*i});
+		// if (i == 30) break;
+	}
 
-	uint32_t groupX = (outputImage->GetSize().width + 15) / 16;
-	uint32_t groupY = (outputImage->GetSize().height + 15) / 16;
+	m_pStrokePass->SetStrokeInfo(strokes, gVecCircle);
+
+	uint32_t groupX = (m_pOutputImage->GetSize().width + 15) / 16;
+	uint32_t groupY = (m_pOutputImage->GetSize().height + 15) / 16;
 	m_pStrokePass->Dispatch(m_pCmd, groupX, groupY, 1);
 
-	GpuHelper::CopyImage(m_pGpuDevice, m_pCmd, outputImage, m_pResultUnit->GetImage());
+	m_pCmd->EndDebugUtilsLabel();
 }
 
 void EffectTool::SetTargetUnit(IDrawUnit *pTargetUnit) {
@@ -158,6 +177,17 @@ void EffectTool::SetTargetUnit(IDrawUnit *pTargetUnit) {
         m_pResultUnit->SubRef();
     }
     m_pResultUnit = BaseTool::CreateDrawUnit(m_pTargetUnit->GetArea(), "EffectToolResultUnit");
+
+	HyperGpu::Image2D::Image2DCreateInfo outputCreateInfo;
+	outputCreateInfo.aspect	  = HyperGpu::ImageAspectFlags::Color;
+	outputCreateInfo.usage	  = HyperGpu::ImageUsageFlags::STORAGE | HyperGpu::ImageUsageFlags::TRANS_DST | HyperGpu::ImageUsageFlags::TRANS_SRC;
+	outputCreateInfo.size	  = std::bit_cast<HyperGpu::Size>(m_pTargetUnit->GetSize());
+	outputCreateInfo.format	  = HyperGpu::PixelFormat::R8G8B8A8;
+	outputCreateInfo.pSampler = m_pCommonSampler;
+	outputCreateInfo.objName  = "StrokeOutputImage";
+	m_pOutputImage		  = m_pGpuDevice->GetResourceManager()->CreateImage2D(outputCreateInfo);
+
+	m_pStrokePass->SetOutputImage(m_pOutputImage);
 }
 
 void EffectTool::End() {
@@ -166,6 +196,7 @@ void EffectTool::End() {
 }
 
 void EffectTool::RenderToUnit(IDrawUnit *resultUnit) {
+	GpuHelper::CopyImage(m_pGpuDevice, nullptr, m_pOutputImage, m_pResultUnit->GetImage());
     BaseTool::CopyDrawUnit(m_pResultUnit, resultUnit);
 }
 

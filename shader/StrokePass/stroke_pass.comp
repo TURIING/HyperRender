@@ -14,13 +14,13 @@ struct Stroke {
 
 layout(std430, binding=0) readonly buffer Circles {
     Circle circles[];
-};
+} circlesBuf;
 
 layout(std430, binding=1) readonly buffer Strokes {
     Stroke strokes[];
-};
+} strokesBuf;
 
-layout(rgba32f, binding=2) writeonly uniform image2D outputImage;
+layout(rgba8, binding=2) writeonly uniform image2D outputImage;
 
 layout (binding = 3) uniform LocalInfo {
     int numStrokes;
@@ -55,11 +55,11 @@ void main() {
     vec4 canvas = vec4(0.0); // 最终像素
 
     for(int s=0;s<localInfo.numStrokes;s++){
-        Stroke stroke = strokes[s];
+        Stroke stroke = strokesBuf.strokes[s];
         vec4 strokePixel = vec4(0.0); // 笔画内部 max
 
         for(int i=0;i<stroke.numCircles;i++){
-            Circle c = circles[stroke.startIndex + i];
+            Circle c = circlesBuf.circles[stroke.startIndex + i];
             vec2 p = vec2(pix) + 0.5;
             float dist = length(p - c.center);
             float alpha = edgeAlpha(dist, c.radius, localInfo.aa) * localInfo.strokeColor.a;
@@ -70,6 +70,7 @@ void main() {
         }
         // 笔画间 alpha 混合
         canvas = blendAlpha(strokePixel, canvas);
+        if(canvas.w == 1.0) break;
     }
 
     imageStore(outputImage, pix, canvas);
