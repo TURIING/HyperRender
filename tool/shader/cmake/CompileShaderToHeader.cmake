@@ -66,7 +66,7 @@ function(COMPILE_SHADER shader_file output_dir)
 
     # 调用 spriv-cross 编译 spv 文件
     execute_process(
-            COMMAND ${SPIRV_CROSS} --version 420 ${output_file_spv} --output ${output_file_gl}
+            COMMAND ${SPIRV_CROSS} --version 410 --no-420pack-extension ${output_file_spv} --output ${output_file_gl}
             RESULT_VARIABLE result
             OUTPUT_VARIABLE output
             ERROR_VARIABLE error
@@ -145,7 +145,7 @@ function(TRANSFORM_RESULT_GL GL_FILE OUTPUT_DIR)
     foreach(LINE IN LISTS FILE_LINES)
         # 跳过空行（可选）
         if(NOT LINE STREQUAL "")
-            set(PROCESSED_LINE "\"${LINE}\"")
+            set(PROCESSED_LINE "\"${LINE}\\n\"")
             set(CONTENT "${CONTENT}\t${PROCESSED_LINE}\n")
         endif()
     endforeach()
