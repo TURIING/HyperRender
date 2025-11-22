@@ -19,6 +19,8 @@ class DualKawaseBlurDownSamplePass;
 class DualKawaseBlurUpSamplePass;
 class GaussianBlurPass;
 class StrokePass;
+class LiquifyMainPass;
+class LiquifyImagePass;
 
 class EffectTool final : public IEffectTool, public BaseTool {
 public:
@@ -27,6 +29,7 @@ public:
 	void SetRoundCorner(float radius) override;
 	void DoDualKawaseBlur(int interation, const Offset2D &offset) override;
 	void DoGaussianBlur();
+	void DoLiquify(const PointI &newMousePos, const PointI &oldMousePos, bool isPressed, bool firstFrame) override;
 	void DoStroke() override;
 	void SetTargetUnit(IDrawUnit *pTargetUnit) override;
 	void Begin(const Area &renderArea) override;
@@ -38,10 +41,13 @@ private:
 	DualKawaseBlurUpSamplePass* m_pDualKawaseBlurUpSamplePass = nullptr;
 	DualKawaseBlurDownSamplePass* m_pDualKawaseBlurDownSamplePass = nullptr;
 	GaussianBlurPass* m_pGaussianBlurPass = nullptr;
+	LiquifyMainPass* m_pLiquifyMainPass = nullptr;
+	LiquifyImagePass* m_pLiquifyImagePass = nullptr;
 	StrokePass* m_pStrokePass = nullptr;
 	DrawUnit* m_pTargetUnit = nullptr;
 	DrawUnit* m_pResultUnit = nullptr;
 	HyperGpu::Image2D* m_pOutputImage = nullptr;
+	std::vector<HyperGpu::Image2D*> m_vecLiquifyImage;
 };
 
 USING_RENDER_NAMESPACE_END

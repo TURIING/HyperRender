@@ -1,0 +1,46 @@
+#version 450
+
+layout(set = 0, binding = 0, rgba8) uniform readonly image2D uvInputImage;
+layout(set = 0, binding = 1, rgba8) uniform writeonly image2D uvOutputImage;
+layout(set = 0, binding = 2) uniform sampler2D targetTex;
+layout(set = 0, binding = 3, rgba8) uniform writeonly image2D outputImage;
+layout(local_size_x = 16, local_size_y = 16) in;
+
+layout (binding = 4) uniform LocalInfo {
+    vec2 resolution;
+    vec2 newMouse;
+    vec2 oldMouse;
+    int firstFrame;
+    int isPressed;
+} localInfo;
+
+float lineDist(vec2 p, vec2 start, vec2 end, float width)
+{
+    vec2 dir = start - end;
+    float lngth = length(dir);
+    dir /= lngth;
+    vec2 proj = max(0.0, min(lngth, dot((start - p), dir))) * dir;
+    return length( (start - p) - proj ) - (width / 2.0);
+}
+
+void main() {
+    ivec2 pix = ivec2(gl_GlobalInvocationID.xy);
+    if (pix.x >= localInfo.resolution.x || pix.y >= localInfo.resolution.y) return;
+    vec2 uv = (vec2(pix) + 0.5) / vec2(localInfo.resolution);
+
+    vec2 col = uv;
+    if (localInfo.firstFrame != 1) {
+        col = imageLoad(uvInputImage, pix).xy;
+        vec2 mouse = localInfo.newMouse / localInfo.resolution;
+        vec2 p_mouse = localInfo.oldMouse / localInfo.resolution;
+        if (localInfo.isPressed != 0) {
+            float dist = lineDist(uv,mouse,p_mouse,0.);
+            float c = clamp(1.-(dist*2.),0.,1.);
+            ivec2 pos = ivec2(uv+((p_mouse-mouse)* c *.7) * localInfo.resolution);
+//            ivec2 pos = ivec2(uv+((p_mouse-mouse)*clamp(1.-(lineDist(uv,mouse,p_mouse,0.)*20.),0.,1.)*.7) * localInfo.resolution);
+           col = imageLoad(uvInputImage, pix).xy;
+        }
+    }
+    imageStore(uvOutputImage, pix, vec4(col, 0.0, 1.0));
+    imageStore(outputImage, pix, texture(targetTex, vec2(col)));
+}

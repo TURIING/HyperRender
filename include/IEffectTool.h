@@ -37,6 +37,8 @@ public:
 
 	virtual void DoGaussianBlur() = 0;
 
+	virtual void DoLiquify(const PointI &newMousePos, const PointI &oldMousePos, bool isPressed, bool firstFrame) = 0;
+
 	virtual void DoStroke() = 0;
 
 	virtual void End() = 0;

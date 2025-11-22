@@ -30,7 +30,7 @@ class ScreenPass;
 class ScreenTool final : public IScreenTool, public BaseTool {
 public:
     explicit ScreenTool(HyperGpu::GpuDevice *gpuDevice);
-    ~ ScreenTool() override;
+    ~ScreenTool() override;
     IScreenTarget *CreateScreen(const HyperRender::PlatformWindowInfo &platformSurfaceInfo) override;
     void SetScreenTarget(IScreenTarget *target) override;
     void AddScreenObject(IDrawUnit *pObjUnit, const Area &area) override;

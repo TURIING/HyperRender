@@ -57,13 +57,6 @@ int32_t TO_F32(T value) {
     return static_cast<float>(value);
 }
 
-template <typename T>
-struct Point {
-    T x;
-    T y;
-};
-using PointF = Point<float>;
-
 #define BEGIN_CMD_DEBUG_LABEL(cmd, name) cmd->BeginDebugUtilsLabel(name);
 #define END_CMD_DEBUG_LABEL(cmd, name) cmd->EndDebugUtilsLabel();
 #define NODISCARD [[nodiscard]]

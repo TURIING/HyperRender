@@ -10,6 +10,8 @@
 #include "../pass/effect/DualKawaseBlurDownSamplePass.h"
 #include "../pass/effect/DualKawaseBlurUpSamplePass.h"
 #include "../pass/effect/GaussianBlurPass.h"
+#include "../pass/effect/LiquifyMainPass.h"
+#include "../pass/effect/LiquifyImagePass.h"
 #include "../pass/StrokePass.h"
 #include "../common/GpuHelper.h"
 #include <fstream>
@@ -25,7 +27,8 @@ EffectTool::EffectTool(HyperGpu::GpuDevice* pGpuDevice): BaseTool(pGpuDevice) {
     m_pDualKawaseBlurDownSamplePass = new DualKawaseBlurDownSamplePass(m_pGpuDevice);
     // m_pGaussianBlurPass = new GaussianBlurPass(pGpuDevice);
 	m_pStrokePass = new StrokePass(pGpuDevice);
-
+	m_pLiquifyMainPass = new LiquifyMainPass(pGpuDevice);
+	m_pLiquifyImagePass = new LiquifyImagePass(pGpuDevice);
 	gVecCircle.reserve(100*100*10);
 	std::ifstream in("data.txt");
 	std::string line;
@@ -48,6 +51,8 @@ EffectTool::~EffectTool() {
     m_pDualKawaseBlurUpSamplePass->SubRef();
     m_pDualKawaseBlurDownSamplePass->SubRef();
     m_pGaussianBlurPass->SubRef();
+	m_pLiquifyMainPass->SubRef();
+	m_pLiquifyImagePass->SubRef();
 	m_pStrokePass->SubRef();
 }
 
@@ -149,7 +154,53 @@ void EffectTool::DoGaussianBlur() {
 	m_pCmd->EndDebugUtilsLabel();
 }
 
+void EffectTool::DoLiquify(const PointI &newMousePos, const PointI &oldMousePos, bool isPressed, bool firstFrame) {
+	const auto size = m_pTargetUnit->GetSize();
+	m_pCmd->BeginDebugUtilsLabel("EffectTool::DoLiquify");
+	if (m_vecLiquifyImage.empty()) {
+		for (auto i = 0; i < 2; i++) {
+			m_vecLiquifyImage.push_back(GpuHelper::CreateImage(m_pGpuDevice, size, m_pCommonSampler));
+			m_pCmd->ClearColorImage(m_vecLiquifyImage[i], {0, 0, 0, 0});
+		}
+	}
 
+	{
+		m_pLiquifyMainPass->SetLocalInfo(size, newMousePos, oldMousePos, isPressed, firstFrame);
+		m_pLiquifyMainPass->SetUvInputImage(m_vecLiquifyImage[0]);
+		HyperGpu::BeginRenderInfo beginInfo {
+			.pPipeline = m_pLiquifyMainPass->GetPipeline(),
+			.clearValue = { { HyperGpu::AttachmentType::COLOR, {0.0, 0.0, 0.0, 0.0 }}},
+			.renderArea = { {0, 0}, std::bit_cast<HyperGpu::Size>(size)},
+			.renderAttachmentType = HyperGpu::RenderAttachmentType::Image2D,
+			.renderAttachment = {1, &m_vecLiquifyImage[1]},
+		};
+		m_pCmd->BeginRenderPass(beginInfo);
+		m_pCmd->SetViewport({0, 0, (float)size.width, (float)size.height});
+		m_pCmd->SetScissor({0, 0, size.width, size.height});
+		m_pLiquifyMainPass->Draw(m_pCmd);
+		m_pCmd->EndRenderPass();
+	}
+
+	{
+		m_pLiquifyImagePass->SetTargetImage(m_pTargetUnit->GetImage());
+		m_pLiquifyImagePass->SetUvInputImage(m_vecLiquifyImage[1]);
+		HyperGpu::BeginRenderInfo beginInfo {
+			.pPipeline = m_pLiquifyImagePass->GetPipeline(),
+			.clearValue = { { HyperGpu::AttachmentType::COLOR, {0.0, 0.0, 0.0, 0.0 }}},
+			.renderArea = { {0, 0}, std::bit_cast<HyperGpu::Size>(size)},
+			.renderAttachmentType = HyperGpu::RenderAttachmentType::Image2D,
+			.renderAttachment = {1, (HyperGpu::Image2D*[]){m_pResultUnit->GetImage()}},
+		};
+		m_pCmd->BeginRenderPass(beginInfo);
+		m_pCmd->SetViewport({0, 0, (float)size.width, (float)size.height});
+		m_pCmd->SetScissor({0, 0, size.width, size.height});
+		m_pLiquifyImagePass->Draw(m_pCmd);
+		m_pCmd->EndRenderPass();
+	}
+
+	std::swap(m_vecLiquifyImage[0], m_vecLiquifyImage[1]);
+	m_pCmd->EndDebugUtilsLabel();
+}
 
 void EffectTool::DoStroke() {
 	m_pCmd->BeginDebugUtilsLabel("EffectTool::DoStroke");
@@ -184,7 +235,7 @@ void EffectTool::SetTargetUnit(IDrawUnit *pTargetUnit) {
 	outputCreateInfo.size	  = std::bit_cast<HyperGpu::Size>(m_pTargetUnit->GetSize());
 	outputCreateInfo.format	  = HyperGpu::PixelFormat::R8G8B8A8;
 	outputCreateInfo.pSampler = m_pCommonSampler;
-	outputCreateInfo.objName  = "StrokeOutputImage";
+	outputCreateInfo.objName  = "OutputImage";
 	m_pOutputImage		  = m_pGpuDevice->GetResourceManager()->CreateImage2D(outputCreateInfo);
 
 	m_pStrokePass->SetOutputImage(m_pOutputImage);
@@ -196,7 +247,7 @@ void EffectTool::End() {
 }
 
 void EffectTool::RenderToUnit(IDrawUnit *resultUnit) {
-	GpuHelper::CopyImage(m_pGpuDevice, nullptr, m_pOutputImage, m_pResultUnit->GetImage());
+	// GpuHelper::CopyImage(m_pGpuDevice, nullptr, m_pOutputImage, m_pResultUnit->GetImage());
     BaseTool::CopyDrawUnit(m_pResultUnit, resultUnit);
 }
 

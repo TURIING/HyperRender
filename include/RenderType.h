@@ -53,6 +53,14 @@ namespace HyperRender
 		}
 	};
 
+	template <typename T>
+	struct Point {
+		T x;
+		T y;
+	};
+	using PointF = Point<float>;
+	using PointI = Point<int32_t>;
+
 	struct Color {
 		float r = 0;
 		float g = 0;

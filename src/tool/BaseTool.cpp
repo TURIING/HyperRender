@@ -16,6 +16,9 @@ USING_RENDER_NAMESPACE_BEGIN
 BaseTool::BaseTool(HyperGpu::GpuDevice* pGpuDevice) : m_pGpuDevice(pGpuDevice) {
     m_pGpuDevice->AddRef();
     m_pCmd           = m_pGpuDevice->GetCmdManager()->CreateCommandBuffer();
+    HyperGpu::Sampler::SamplerCreateInfo samplerCreateInfo{};
+    samplerCreateInfo.minFilter = HyperGpu::Filter::NEAREST;
+    samplerCreateInfo.magFilter = HyperGpu::Filter::NEAREST;
     m_pCommonSampler = m_pGpuDevice->GetResourceManager()->CreateSampler({});
     m_pRenderQueue   = m_pGpuDevice->CreateQueue(HyperGpu::QueueType::Graphics);
     m_pRenderFence   = m_pGpuDevice->GetSyncManager()->CreateFence();
