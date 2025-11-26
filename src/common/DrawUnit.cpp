@@ -12,7 +12,7 @@ DrawUnit::DrawUnit(HyperGpu::GpuDevice* pGpuDevice, const DrawUnitCreateInfo &in
     HyperGpu::Image2D::Image2DCreateInfo createInfo;
     createInfo.size = std::bit_cast<HyperGpu::Size>(info.area.size);
     createInfo.pSampler = info.pSampler;
-    createInfo.format = HyperGpu::PixelFormat::R8G8B8A8;
+    createInfo.format = HyperGpu::PixelFormat::R8G8B8A8_SRGB;
     createInfo.usage = HyperGpu::ImageUsageFlags::SAMPLED | HyperGpu::ImageUsageFlags::COLOR_ATTACHMENT | HyperGpu::ImageUsageFlags::TRANS_DST | HyperGpu::ImageUsageFlags::TRANS_SRC;
     createInfo.aspect = HyperGpu::ImageAspectFlags::Color;
     createInfo.objName = info.pName;

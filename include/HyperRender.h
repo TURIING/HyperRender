@@ -11,6 +11,7 @@
 #include "ITool.h"
 #include "IScreenTool.h"
 #include "IEffectTool.h"
+#include "ISelectionTool.h"
 #include "ToolFactory.h"
 #include "RenderType.h"
 #include "Render.h"

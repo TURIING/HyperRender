@@ -127,7 +127,7 @@ void EffectTool::DoGaussianBlur() {
 	inputCreateInfo.aspect	 = HyperGpu::ImageAspectFlags::Color;
 	inputCreateInfo.usage	 = HyperGpu::ImageUsageFlags::STORAGE | HyperGpu::ImageUsageFlags::TRANS_DST | HyperGpu::ImageUsageFlags::TRANS_SRC;
 	inputCreateInfo.size	 = std::bit_cast<HyperGpu::Size>(m_pTargetUnit->GetSize());
-	inputCreateInfo.format	 = HyperGpu::PixelFormat::R8G8B8A8;
+	inputCreateInfo.format	 = HyperGpu::PixelFormat::R8G8B8A8_SRGB;
 	inputCreateInfo.pSampler = m_pCommonSampler;
 	inputCreateInfo.objName	 = "GaussianBlurInputImage";
 	auto inputImage			 = m_pGpuDevice->GetResourceManager()->CreateImage2D(inputCreateInfo);
@@ -136,7 +136,7 @@ void EffectTool::DoGaussianBlur() {
 	outputCreateInfo.aspect	  = HyperGpu::ImageAspectFlags::Color;
 	outputCreateInfo.usage	  = HyperGpu::ImageUsageFlags::STORAGE | HyperGpu::ImageUsageFlags::TRANS_DST | HyperGpu::ImageUsageFlags::TRANS_SRC;
 	outputCreateInfo.size	  = std::bit_cast<HyperGpu::Size>(m_pTargetUnit->GetSize());
-	outputCreateInfo.format	  = HyperGpu::PixelFormat::R8G8B8A8;
+	outputCreateInfo.format	  = HyperGpu::PixelFormat::R8G8B8A8_SRGB;
 	outputCreateInfo.pSampler = m_pCommonSampler;
 	outputCreateInfo.objName  = "GaussianBlurOutputImage";
 	auto outputImage		  = m_pGpuDevice->GetResourceManager()->CreateImage2D(outputCreateInfo);
@@ -233,7 +233,7 @@ void EffectTool::SetTargetUnit(IDrawUnit *pTargetUnit) {
 	outputCreateInfo.aspect	  = HyperGpu::ImageAspectFlags::Color;
 	outputCreateInfo.usage	  = HyperGpu::ImageUsageFlags::STORAGE | HyperGpu::ImageUsageFlags::TRANS_DST | HyperGpu::ImageUsageFlags::TRANS_SRC;
 	outputCreateInfo.size	  = std::bit_cast<HyperGpu::Size>(m_pTargetUnit->GetSize());
-	outputCreateInfo.format	  = HyperGpu::PixelFormat::R8G8B8A8;
+	outputCreateInfo.format	  = HyperGpu::PixelFormat::R8G8B8A8_SRGB;
 	outputCreateInfo.pSampler = m_pCommonSampler;
 	outputCreateInfo.objName  = "OutputImage";
 	m_pOutputImage		  = m_pGpuDevice->GetResourceManager()->CreateImage2D(outputCreateInfo);

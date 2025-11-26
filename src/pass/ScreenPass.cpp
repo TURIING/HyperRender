@@ -69,7 +69,7 @@ ScreenPass::ScreenPass(HyperGpu::GpuDevice* gpuDevice) : BasePass(gpuDevice) {
 		{
 			.type = HyperGpu::AttachmentType::COLOR,
 			.index = 0,
-			.format = HyperGpu::PixelFormat::R8G8B8A8,
+			.format = HyperGpu::PixelFormat::R8G8B8A8_SRGB,
 			.loadOp = HyperGpu::AttachmentLoadOp::CLEAR,
 			.storeOp = HyperGpu::AttachmentStoreOp::STORE,
 		}

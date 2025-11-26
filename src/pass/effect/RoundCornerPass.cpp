@@ -57,7 +57,7 @@ RoundCornerPass::RoundCornerPass(HyperGpu::GpuDevice* pGpuDevice): BasePass(pGpu
         {
             .type = HyperGpu::AttachmentType::COLOR,
             .index = 0,
-            .format = HyperGpu::PixelFormat::R8G8B8A8
+            .format = HyperGpu::PixelFormat::R8G8B8A8_SRGB
         }
     };
 

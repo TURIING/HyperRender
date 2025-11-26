@@ -20,6 +20,7 @@ class GpuDevice;
 namespace HyperRender {
 class IScreenTool;
 class IEffectTool;
+class ISelectionTool;
 
 enum class GpuType { OPENGL, VULKAN };
 
@@ -29,6 +30,7 @@ public:
 	~ToolFactory() override;
 	[[nodiscard]] IScreenTool* CreateScreenTool() const;
 	[[nodiscard]] IEffectTool* CreateEffectTool() const;
+	[[nodiscard]] ISelectionTool* CreateSelectionTool() const;
 
 private:
 	HyperGpu::GpuFactory* m_pGpuFactory = nullptr;

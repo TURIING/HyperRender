@@ -28,7 +28,7 @@ public:
 	~EffectTool() override;
 	void SetRoundCorner(float radius) override;
 	void DoDualKawaseBlur(int interation, const Offset2D &offset) override;
-	void DoGaussianBlur();
+	void DoGaussianBlur() override;
 	void DoLiquify(const PointI &newMousePos, const PointI &oldMousePos, bool isPressed, bool firstFrame) override;
 	void DoStroke() override;
 	void SetTargetUnit(IDrawUnit *pTargetUnit) override;

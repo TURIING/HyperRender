@@ -10,6 +10,7 @@
 #include "EffectTool.h"
 #include "GpuDevice.h"
 #include "ScreenTool.h"
+#include "SelectionTool.h"
 
 USING_RENDER_NAMESPACE_BEGIN
 
@@ -46,6 +47,10 @@ IScreenTool* ToolFactory::CreateScreenTool() const {
 
 IEffectTool* ToolFactory::CreateEffectTool() const {
 	return new EffectTool(m_pGpuDevice);
+}
+
+ISelectionTool * ToolFactory::CreateSelectionTool() const {
+	return new SelectionTool(m_pGpuDevice);
 }
 
 USING_RENDER_NAMESPACE_END
