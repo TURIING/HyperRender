@@ -33,7 +33,7 @@ public:
     ~ScreenTool() override;
     IScreenTarget *CreateScreen(const HyperRender::PlatformWindowInfo &platformSurfaceInfo) override;
     void SetScreenTarget(IScreenTarget *target) override;
-    void AddScreenObject(IDrawUnit *pObjUnit, const Area &area) override;
+    void AddScreenObject(IDrawUnit *pObjUnit, const Transform& transform = {}) override;
     void Begin(const Area &updateArea) override;
     void DoRender() override;
     void End() override;

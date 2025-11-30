@@ -17,7 +17,7 @@ void Camera::SetLookAt(const glm::vec3& eye, const glm::vec3& look, const glm::v
 }
 
 void Camera::SetOrtho(float left, float right, float bottom, float top, float near, float far) {
-    m_projection = glm::orthoRH_ZO(left, right, bottom, top, near, far);
+    m_projection = glm::ortho(left, right, bottom, top, near, far);
 }
 
 void Camera::SetFrustum(float left, float right, float bottom, float top, float near, float far) {

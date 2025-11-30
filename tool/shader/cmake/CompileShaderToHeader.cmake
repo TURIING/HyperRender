@@ -40,7 +40,7 @@ function(COMPILE_SHADER shader_file output_dir)
 
     # 调用 glslangValidator 编译 GLSL 文件
     execute_process(
-            COMMAND ${GLSL_LANG_VALIDATOR} -V ${shader_file} -o ${output_file_spv} -I${PATH_SHADER_INCLUDE}
+            COMMAND ${GLSL_LANG_VALIDATOR} --iy -V ${shader_file} -o ${output_file_spv} -I${PATH_SHADER_INCLUDE}
             RESULT_VARIABLE result
             OUTPUT_VARIABLE output
             ERROR_VARIABLE error
@@ -53,7 +53,7 @@ function(COMPILE_SHADER shader_file output_dir)
 
     # 调用 spriv-cross 编译 spv 文件
     execute_process(
-            COMMAND ${SPIRV_CROSS} --version 310 --es ${output_file_spv} --output ${output_file_gles}
+            COMMAND ${SPIRV_CROSS} --version 310 --es ${output_file_spv} --output ${output_file_gles} --flip-vert-y
             RESULT_VARIABLE result
             OUTPUT_VARIABLE output
             ERROR_VARIABLE error
@@ -66,7 +66,7 @@ function(COMPILE_SHADER shader_file output_dir)
 
     # 调用 spriv-cross 编译 spv 文件
     execute_process(
-            COMMAND ${SPIRV_CROSS} --version 410 --no-420pack-extension ${output_file_spv} --output ${output_file_gl}
+            COMMAND ${SPIRV_CROSS} --version 410 --no-420pack-extension ${output_file_spv} --output ${output_file_gl} --flip-vert-y
             RESULT_VARIABLE result
             OUTPUT_VARIABLE output
             ERROR_VARIABLE error

@@ -34,13 +34,14 @@ void ScreenTool::SetScreenTarget(IScreenTarget* target) {
     m_pScreenTarget->AddRef();
 }
 
-void ScreenTool::AddScreenObject(IDrawUnit *pObjUnit, const Area &area) {
+void ScreenTool::AddScreenObject(IDrawUnit *pObjUnit, const Transform& transform) {
     const auto unit = dynamic_cast<DrawUnit*>(pObjUnit);
-    m_pScreenPass->AddScreenTexture(unit->GetImage(), area.offset);
+    m_pScreenPass->AddScreenTexture(unit->GetImage(), unit->GetArea().offset, transform);
 }
 
 void ScreenTool::Begin(const Area& updateArea) {
     m_renderArea = updateArea;
+    updateSize(updateArea.size);
     m_pScreenPass->SetScreenSize(updateArea.size);
 
     if (!m_pScreenTexture) {
@@ -53,6 +54,7 @@ void ScreenTool::Begin(const Area& updateArea) {
 void ScreenTool::DoRender() {
     BEGIN_CMD_DEBUG_LABEL(m_pCmd, "ScreenTool::DoRender");
     m_pScreenPass->SetBlendType(BlendType::Normal);
+    m_pScreenPass->SetGlobalUniform(m_pGlobalBuffer);
     auto image = m_pScreenTexture->GetImage();
     HyperGpu::BeginRenderInfo beginInfo {
         .pPipeline = m_pScreenPass->GetPipeline(),

@@ -38,11 +38,8 @@ BaseTool::~BaseTool() {
 }
 
 void BaseTool::updateSize(const Size& size) {
-    const auto halfWidth  = size.width  / 2;
-    const auto halfHeight = size.height / 2;
-
     Camera camera;
-    camera.SetOrtho(0, size.width, size.height, 0, -1.0f, 1000.0f);
+    camera.SetOrtho(0, size.width, size.height, 0, 0.f, 1.0f);
 
     m_globalInfo.view = camera.GetViewMatrix();
     m_globalInfo.proj = camera.GetProjectionMatrix();

@@ -31,7 +31,7 @@ namespace HyperRender {
          * @param pObjUnit
          * @param area 上屏的区域
          */
-        virtual void AddScreenObject(IDrawUnit* pObjUnit, const Area &area) = 0;
+        virtual void AddScreenObject(IDrawUnit* pObjUnit, const Transform& transform = {}) = 0;
 
         virtual void Begin(const Area &updateArea) = 0;
         virtual void DoRender() = 0;

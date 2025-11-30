@@ -51,6 +51,10 @@ namespace HyperRender
 		bool operator==(const Area& rhs) const {
 			return offset == rhs.offset && size == rhs.size;
 		}
+
+		[[nodiscard]] Offset2D GetCenter() const {
+			return { (int32_t)(offset.x + size.width / 2), (int32_t)(offset.y + size.height/ 2) };
+		}
 	};
 
 	template <typename T>
@@ -60,6 +64,19 @@ namespace HyperRender
 	};
 	using PointF = Point<float>;
 	using PointI = Point<int32_t>;
+
+	struct Vec3 {
+		float x = 0.0;
+		float y = 0.0;
+		float z = 0.0;
+	};
+
+	struct Transform {
+		Offset2D center;							// 旋转的中心点
+		Offset2D translate;
+		Vec3 scale = { 1.0, 1.0, 1.0 };
+		Vec3 rotation;
+	};
 
 	struct Color {
 		float r = 0;

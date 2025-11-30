@@ -63,4 +63,21 @@ void GpuHelper::CopyImage(HyperGpu::GpuDevice* pDevice, HyperGpu::GpuCmd* pCmd, 
     }
 }
 
+glm::mat4 GpuHelper::GetModelMatrix(const Transform &transform) {
+    auto model = glm::mat4(1.0f);
+    // 平移到目标位置
+    model = glm::translate(model, glm::vec3(transform.translate.x, transform.translate.y, 0.0f));
+    // 进行缩放
+    model = glm::scale(model, glm::vec3(transform.scale.x, transform.scale.y, 1.0f));
+    // 平移到目标中心
+    model = glm::translate(model, glm::vec3(transform.center.x, transform.center.y, 0.0f));
+    // 进行旋转
+    model = glm::rotate(model, glm::radians(transform.rotation.x), glm::vec3(1.0, 0.0, 0.0));
+    model = glm::rotate(model, glm::radians(transform.rotation.y), glm::vec3(0.0, 1.0, 0.0));
+    model = glm::rotate(model, glm::radians(transform.rotation.z), glm::vec3(0.0, 0.0, 1.0));
+    // 平移回目标左上角
+    model = glm::translate(model, glm::vec3(-transform.center.x, -transform.center.y, 0.0f));
+    return model;
+}
+
 USING_RENDER_NAMESPACE_END

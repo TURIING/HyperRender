@@ -18,6 +18,7 @@ public:
     NODISCARD static HyperGpu::Buffer* CreateShaderStorageBuffer(HyperGpu::GpuDevice* pDevice, uint32_t size);
     NODISCARD static HyperGpu::Image2D* CreateImage(HyperGpu::GpuDevice* pDevice, const Size& size, HyperGpu::Sampler* pSampler, const char* name = nullptr, HyperGpu::PixelFormat format = HyperGpu::PixelFormat::R16G16B16A16_SFLOAT);
     static void CopyImage(HyperGpu::GpuDevice* pDevice, HyperGpu::GpuCmd* pCmd, HyperGpu::Image2D* pSrc, HyperGpu::Image2D* pDst, const Offset2D& srcOffset = {}, const Offset2D& dstOffset = {});
+    NODISCARD static glm::mat4 GetModelMatrix(const Transform& transform);
 };
 
 USING_RENDER_NAMESPACE_END

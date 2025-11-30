@@ -35,17 +35,31 @@ static std::vector<HyperGpu::VertexAttribute> gVertexAttributes = {
 };
 
 static std::vector<HyperGpu::VertexAttribute> gInstanceAttributes = {
-	{ 2, HyperGpu::AttributeDataType::Vec2 },
-	{ 3, HyperGpu::AttributeDataType::Vec2 },
-	{ 4, HyperGpu::AttributeDataType::Int },
+	{ 2, HyperGpu::AttributeDataType::Vec4 },
+	{ 3, HyperGpu::AttributeDataType::Vec4 },
+	{ 4, HyperGpu::AttributeDataType::Vec4 },
+	{ 5, HyperGpu::AttributeDataType::Vec4 },
+	{ 6, HyperGpu::AttributeDataType::Vec2 },
+	{ 7, HyperGpu::AttributeDataType::Vec2 },
+	{ 8, HyperGpu::AttributeDataType::Int },
 };
 
 static std::vector<Vertex> gVertexData = {
 	// 位置             // 纹理坐标
-	{{-1.0f, -1.0f}, {0.0f, 0.0f}}, // 左下角
-	{{1.0f, -1.0f}, {1.0f, 0.0f}},  // 右下角
-	{{-1.0, 1.0f}, {0.0f, 1.0f}},   // 左上角
+	// {{-1.0f, -1.0f}, {0.0f, 0.0f}}, // 左下角
+	// {{1.0f, -1.0f}, {1.0f, 0.0f}},  // 右下角
+	// {{-1.0, 1.0f}, {0.0f, 1.0f}},   // 左上角
+	// {{1.0f, 1.0f}, {1.0f, 1.0f}},   // 右上角
+
+	// {{0.0f, 600.0f}, {0.0f, 1.0f}},   // 左上角
+	// {{600.0f, 600.0f}, {1.0f, 1.0f}},   // 右上角
+	// {{ 0.0f, 0.0f}, {0.0f, 0.0f}}, // 左下角
+	// {{600.0f, 0.0f}, {1.0f, 0.0f}},  // 右下角
+
+	{{0.0f, 1.0f}, {0.0f, 1.0f}},   // 左上角
 	{{1.0f, 1.0f}, {1.0f, 1.0f}},   // 右上角
+	{{ 0.0f, 0.0f}, {0.0f, 0.0f}}, // 左下角
+	{{1.0f, 0.0f}, {1.0f, 0.0f}},  // 右下角
 };
 
 ScreenPass::ScreenPass(HyperGpu::GpuDevice* gpuDevice) : BasePass(gpuDevice) {
@@ -62,7 +76,7 @@ ScreenPass::ScreenPass(HyperGpu::GpuDevice* gpuDevice) : BasePass(gpuDevice) {
 	envInfo.rasterInfo = HyperGpu::RasterizationInfo{
 		.primitiveType = HyperGpu::PrimitiveType::TRIANGLE_STRIP,
 		.polygonMode   = HyperGpu::PolygonMode::FILL,
-		.cullMode	   = HyperGpu::CullMode::BACK,
+		.cullMode	   = HyperGpu::CullMode::NONE,
 		.frontFace	   = HyperGpu::FrontFace::CLOCK_WISE,
 	};
 	envInfo.attachments = {
@@ -80,10 +94,12 @@ ScreenPass::ScreenPass(HyperGpu::GpuDevice* gpuDevice) : BasePass(gpuDevice) {
 
 ScreenPass::~ScreenPass() {}
 
-void ScreenPass::AddScreenTexture(HyperGpu::Image2D* screenTexture, const Offset2D& screenPos) {
+void ScreenPass::AddScreenTexture(HyperGpu::Image2D* screenTexture, const Offset2D& screenPos, const Transform& transform) {
 	this->UpdateImageBinding("screenTex", screenTexture);
 	const auto size = screenTexture->GetSize();
+
 	m_vecInstanceData.push_back({
+		.iModel = GpuHelper::GetModelMatrix(transform),
 		.iOffset = {screenPos.x, screenPos.y},
 		.iSize = {size.width, size.height},
 		.iTextureIndex = TO_I32(m_vecInstanceData.size()),

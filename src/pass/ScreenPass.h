@@ -15,6 +15,7 @@ USING_RENDER_NAMESPACE_BEGIN
 
 class ScreenPass : public BasePass {
     struct InstanceData {
+        alignas(16) glm::mat4 iModel;
         alignas(8) glm::vec2 iOffset;
         alignas(8) glm::vec2 iSize;
         alignas(4) int iTextureIndex = 0;
@@ -27,7 +28,7 @@ class ScreenPass : public BasePass {
 public:
     explicit ScreenPass(HyperGpu::GpuDevice* gpuDevice);
 	~ScreenPass() override;
-    void AddScreenTexture(HyperGpu::Image2D* screenTexture, const Offset2D& screenPos);
+    void AddScreenTexture(HyperGpu::Image2D* screenTexture, const Offset2D& screenPos, const Transform& transform);
     void ClearScreenTexture();
     void Draw(HyperGpu::GpuCmd *pCmd) override;
     void SetScreenSize(const Size &size);
