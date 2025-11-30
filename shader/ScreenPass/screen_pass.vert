@@ -15,9 +15,12 @@ layout (location = 8) in int iTextureIndex;
 
 layout (location = 0) out vec2 texCoord;
 layout (location = 1) flat out int textureIndex;
+layout (location = 2) flat out int needAliasing;
+layout (location = 3) out vec2 texSize;
 
 layout (binding = 1) uniform LocalInfo {
     vec2 screenSize;
+    int needAliasing;
 } localInfo;
 
 void main()
@@ -28,4 +31,6 @@ void main()
     gl_Position.y = -gl_Position.y;
     texCoord = vTexCoord;
     textureIndex = iTextureIndex;
+    needAliasing = localInfo.needAliasing;
+    texSize = iSize;
 }

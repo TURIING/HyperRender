@@ -4,9 +4,24 @@
 
 layout (location = 0) in vec2 texCoord;
 layout (location = 1) flat in int textureIndex;
+layout (location = 2) flat in int needAliasing;
+layout (location = 3) in vec2 texSize;
 
 layout (binding = 2) uniform sampler2D screenTex[MAX_TEXTURE_COUNT];
 layout (location = 0) out vec4 FragColor;
+
+float getAntiAliasingAlpha(vec2 size)
+{
+    float alpha= 1.;
+    float aliasCount = 2;
+    vec2 antiSize = vec2(aliasCount/size.x, aliasCount/size.y);
+    vec2 texCoo = abs(texCoord - vec2(.5));
+
+    float alphax= 1.- smoothstep(.5 - antiSize.x, .5,texCoo.x);
+    float alphay= 1.- smoothstep(.5 - antiSize.y, .5,texCoo.y);
+
+    return alphax * alphay;
+}
 
 void main()
 {
@@ -30,5 +45,5 @@ void main()
         // case 15: color = texture(screenTex[15], texCoord);  break;
         default: color = vec4(1.0, 0.0, 0.0, 1.0);          break;
     }
-    FragColor = color;
+    FragColor = vec4(color.rgb, needAliasing == 1 ? color.a * getAntiAliasingAlpha(texSize) : color.a);
 }

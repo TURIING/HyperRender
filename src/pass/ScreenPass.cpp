@@ -143,4 +143,9 @@ void ScreenPass::SetScreenSize(const Size &size) {
 	m_isLocalInfoDirty = true;
 }
 
+void ScreenPass::SetNeedAliasing(bool needAliasing) {
+	m_localInfo.needAliasing = needAliasing;
+	m_isLocalInfoDirty = true;
+}
+
 USING_RENDER_NAMESPACE_END

@@ -23,6 +23,7 @@ class ScreenPass : public BasePass {
 
     struct LocalInfo {
         alignas(8) glm::vec2 screenSize;
+        alignas(4) int needAliasing;
     };
 
 public:
@@ -32,6 +33,7 @@ public:
     void ClearScreenTexture();
     void Draw(HyperGpu::GpuCmd *pCmd) override;
     void SetScreenSize(const Size &size);
+    void SetNeedAliasing(bool needAliasing);
 
 private:
     std::vector<InstanceData> m_vecInstanceData;
