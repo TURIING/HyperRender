@@ -88,6 +88,10 @@ ScreenPass::ScreenPass(HyperGpu::GpuDevice* gpuDevice) : BasePass(gpuDevice) {
 			.storeOp = HyperGpu::AttachmentStoreOp::STORE,
 		}
 	};
+	envInfo.multiSampleInfo = {
+		.enable = false,
+		.sampleCount = HyperGpu::SampleCountFlags::SAMPLE_COUNT_1_BIT,
+	};
 	m_pPipeline = m_pGpuDevice->GetPipelineManager()->CreateGraphicPipeline(envInfo);
 	m_pLocalInfoBuffer = GpuHelper::CreateUniformBuffer(m_pGpuDevice, sizeof(LocalInfo));
 }

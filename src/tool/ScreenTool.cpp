@@ -8,7 +8,7 @@
 #include "ScreenTool.h"
 #include "ScreenTarget/ScreenWindowTarget.h"
 #include <GpuDevice.h>
-
+#include "../common/GpuHelper.h"
 #include "../pass/ScreenPass.h"
 
 USING_RENDER_NAMESPACE_BEGIN
@@ -43,9 +43,17 @@ void ScreenTool::Begin(const Area& updateArea) {
     m_renderArea = updateArea;
     updateSize(updateArea.size);
     m_pScreenPass->SetScreenSize(updateArea.size);
+    // m_pScreenPass->SetNeedAliasing(true);
 
     if (!m_pScreenTexture) {
-        m_pScreenTexture = this->CreateDrawUnit(updateArea);
+        m_pScreenTexture = GpuHelper::CreateImage(
+            m_pGpuDevice,
+            updateArea.size,
+            m_pCommonSampler,
+            "ScreenTexture",
+            HyperGpu::PixelFormat::R8G8B8A8_SRGB,
+            HyperGpu::SampleCountFlags::SAMPLE_COUNT_1_BIT
+        );
     }
 
     begin();
@@ -55,13 +63,12 @@ void ScreenTool::DoRender() {
     BEGIN_CMD_DEBUG_LABEL(m_pCmd, "ScreenTool::DoRender");
     m_pScreenPass->SetBlendType(BlendType::Normal);
     m_pScreenPass->SetGlobalUniform(m_pGlobalBuffer);
-    auto image = m_pScreenTexture->GetImage();
     HyperGpu::BeginRenderInfo beginInfo {
         .pPipeline = m_pScreenPass->GetPipeline(),
         .clearValue = {{ .color = {1.0, 1.0, 1.0, 1}}},
         .renderArea = std::bit_cast<HyperGpu::Area>(m_renderArea),
         .renderAttachmentType = HyperGpu::RenderAttachmentType::Image2D,
-        .renderAttachment = {1, &image},
+        .renderAttachment = {1, (HyperGpu::Image2D*[])m_pScreenTexture},
     };
     m_pCmd->BeginRenderPass(beginInfo);
     m_pCmd->SetViewport({0, 0, (float)m_renderArea.size.width, (float)m_renderArea.size.height});
@@ -80,7 +87,7 @@ void ScreenTool::renderToScreen() {
     ScreenWindowTarget::DrawToTargetInfo info{
         .pPresentSemaphore = &m_pRenderSemaphore,
         .semaphoreCount = 1,
-        .pImage = m_pScreenTexture->GetImage(),
+        .pImage = m_pScreenTexture,
         .srcArea = m_renderArea,
         .dstArea = m_renderArea,
     };

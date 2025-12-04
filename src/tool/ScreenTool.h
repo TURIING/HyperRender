@@ -46,7 +46,7 @@ private:
     HyperGpu::GpuSurface *m_pSurface = nullptr;
     ScreenWindowTarget* m_pScreenTarget = nullptr;
     HyperGpu::Semaphore* m_pRenderSemaphore = nullptr;
-    DrawUnit* m_pScreenTexture = nullptr;
+    HyperGpu::Image2D* m_pScreenTexture = nullptr;
 };
 
 USING_RENDER_NAMESPACE_END

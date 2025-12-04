@@ -16,6 +16,7 @@ DrawUnit::DrawUnit(HyperGpu::GpuDevice* pGpuDevice, const DrawUnitCreateInfo &in
     createInfo.usage = HyperGpu::ImageUsageFlags::SAMPLED | HyperGpu::ImageUsageFlags::COLOR_ATTACHMENT | HyperGpu::ImageUsageFlags::TRANS_DST | HyperGpu::ImageUsageFlags::TRANS_SRC;
     createInfo.aspect = HyperGpu::ImageAspectFlags::Color;
     createInfo.objName = info.pName;
+    createInfo.samples = info.sampleCount;
     m_pImage2D = pGpuDevice->GetResourceManager()->CreateImage2D(createInfo);
 }
 

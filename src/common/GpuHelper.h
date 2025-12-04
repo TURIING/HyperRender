@@ -16,7 +16,14 @@ class GpuHelper {
 public:
     NODISCARD static HyperGpu::Buffer* CreateUniformBuffer(HyperGpu::GpuDevice* pDevice, uint32_t size);
     NODISCARD static HyperGpu::Buffer* CreateShaderStorageBuffer(HyperGpu::GpuDevice* pDevice, uint32_t size);
-    NODISCARD static HyperGpu::Image2D* CreateImage(HyperGpu::GpuDevice* pDevice, const Size& size, HyperGpu::Sampler* pSampler, const char* name = nullptr, HyperGpu::PixelFormat format = HyperGpu::PixelFormat::R16G16B16A16_SFLOAT);
+    NODISCARD static HyperGpu::Image2D* CreateImage(
+        HyperGpu::GpuDevice* pDevice,
+        const Size& size,
+        HyperGpu::Sampler* pSampler,
+        const char* name = nullptr,
+        HyperGpu::PixelFormat format = HyperGpu::PixelFormat::R8G8B8A8_SRGB,
+        HyperGpu::SampleCountFlags = HyperGpu::SampleCountFlags::SAMPLE_COUNT_1_BIT);
+    NODISCARD static HyperGpu::Sampler* CreateSampler(HyperGpu::GpuDevice* pDevice, HyperGpu::Filter magFilter = HyperGpu::Filter::LINEAR, HyperGpu::Filter minFilter = HyperGpu::Filter::LINEAR);
     static void CopyImage(HyperGpu::GpuDevice* pDevice, HyperGpu::GpuCmd* pCmd, HyperGpu::Image2D* pSrc, HyperGpu::Image2D* pDst, const Offset2D& srcOffset = {}, const Offset2D& dstOffset = {});
     NODISCARD static glm::mat4 GetModelMatrix(const Transform& transform);
 };

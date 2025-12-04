@@ -23,7 +23,7 @@ HyperGpu::Buffer* GpuHelper::CreateShaderStorageBuffer(HyperGpu::GpuDevice* pDev
 	});
 }
 
-HyperGpu::Image2D* GpuHelper::CreateImage(HyperGpu::GpuDevice *pDevice, const Size &size, HyperGpu::Sampler *pSampler, const char *name, HyperGpu::PixelFormat format) {
+HyperGpu::Image2D* GpuHelper::CreateImage(HyperGpu::GpuDevice *pDevice, const Size &size, HyperGpu::Sampler *pSampler, const char *name, HyperGpu::PixelFormat format, HyperGpu::SampleCountFlags sampleCount) {
     HyperGpu::Image2D::Image2DCreateInfo createInfo;
     createInfo.size = std::bit_cast<HyperGpu::Size>(size);
     createInfo.pSampler = pSampler;
@@ -31,7 +31,15 @@ HyperGpu::Image2D* GpuHelper::CreateImage(HyperGpu::GpuDevice *pDevice, const Si
     createInfo.format = format;
     createInfo.usage = HyperGpu::ImageUsageFlags::SAMPLED | HyperGpu::ImageUsageFlags::COLOR_ATTACHMENT | HyperGpu::ImageUsageFlags::TRANS_DST | HyperGpu::ImageUsageFlags::TRANS_SRC;
     createInfo.aspect = HyperGpu::ImageAspectFlags::Color;
+    createInfo.samples = sampleCount;
     return pDevice->GetResourceManager()->CreateImage2D(createInfo);
+}
+
+HyperGpu::Sampler * GpuHelper::CreateSampler(HyperGpu::GpuDevice *pDevice, HyperGpu::Filter magFilter, HyperGpu::Filter minFilter) {
+    HyperGpu::Sampler::SamplerCreateInfo samplerCreateInfo{};
+    samplerCreateInfo.minFilter = magFilter;
+    samplerCreateInfo.magFilter = minFilter;
+    return pDevice->GetResourceManager()->CreateSampler(samplerCreateInfo);
 }
 
 void GpuHelper::CopyImage(HyperGpu::GpuDevice* pDevice, HyperGpu::GpuCmd* pCmd, HyperGpu::Image2D *pSrc, HyperGpu::Image2D *pDst, const Offset2D &srcOffset, const Offset2D &dstOffset) {

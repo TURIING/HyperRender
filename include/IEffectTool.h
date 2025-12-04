@@ -11,11 +11,13 @@
 #include "IDrawUnit.h"
 #include "ITool.h"
 #include "RenderType.h"
+#include "Effect/IEffect.h"
+#include "Effect/IEffectFactory.h"
 
 namespace HyperRender {
 class IEffectTool : virtual public ITool {
 public:
-	virtual void Begin(const Area &renderArea) = 0;
+	virtual IEffectFactory* CreateEffectFactory() = 0;
 
 	/**
 	 * 设置施加效果的DrawUnit
@@ -23,23 +25,11 @@ public:
 	 */
 	virtual void SetTargetUnit(IDrawUnit* pTargetUnit) = 0;
 
-	/**
-	 * @param radius 圆角度数，值在0-1之间
-	 */
-	virtual void SetRoundCorner(float radius) = 0;
+	virtual void SetEffect(IEffect* pEffect) = 0;
 
-	/**
-	 * DualKawaseBlur
-	 * @param interation 迭代次数
-	 * @param offset 偏移
-	 */
-	virtual void DoDualKawaseBlur(int interation, const Offset2D &offset) = 0;
+	virtual void Begin(const Area &renderArea) = 0;
 
-	virtual void DoGaussianBlur() = 0;
-
-	virtual void DoLiquify(const PointI &newMousePos, const PointI &oldMousePos, bool isPressed, bool firstFrame) = 0;
-
-	virtual void DoStroke() = 0;
+	virtual void DoRender() = 0;
 
 	virtual void End() = 0;
 
