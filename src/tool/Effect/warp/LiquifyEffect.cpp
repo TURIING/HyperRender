@@ -17,6 +17,7 @@ LiquifyEffect::LiquifyEffect(HyperGpu::GpuDevice *pGpuDevice): BaseEffect(pGpuDe
 LiquifyEffect::~LiquifyEffect() {
     m_pLiquifyMainPass->SubRef();
     m_pLiquifyImagePass->SubRef();
+    m_pLinearSampler->SubRef();
 }
 
 void LiquifyEffect::SetLiquifyInfo(const PointI &newMousePos, const PointI &oldMousePos, bool isPressed, bool firstFrame) {

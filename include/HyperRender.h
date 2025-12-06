@@ -13,8 +13,6 @@
 #include "IEffectTool.h"
 #include "Effect/IEffect.h"
 #include "Effect/IEffectFactory.h"
-#include "Effect/blur/IDualKawaseBlur.h"
-#include "Effect/warp/ILiquifyEffect.h"
 #include "ISelectionTool.h"
 #include "ToolFactory.h"
 #include "RenderType.h"

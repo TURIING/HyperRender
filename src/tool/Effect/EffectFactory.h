@@ -16,6 +16,7 @@ public:
     ~EffectFactory() override;
     NODISCARD IDualKawaseBlur * CreateDualKawaseBlurEffect() override;
     NODISCARD ILiquifyEffect * CreateLiquifyEffect() override;
+    NODISCARD IEmbossFilter * CreateEmbossFilter() override;
 
 private:
     HyperGpu::GpuDevice* m_pGpuDevice = nullptr;

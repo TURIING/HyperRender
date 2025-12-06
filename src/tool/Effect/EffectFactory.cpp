@@ -4,6 +4,7 @@
 
 #include "EffectFactory.h"
 #include "blur/DualKawaseBlurEffect.h"
+#include "filter/EmbossFilter.h"
 #include "warp/LiquifyEffect.h"
 
 USING_RENDER_NAMESPACE_BEGIN
@@ -21,6 +22,10 @@ IDualKawaseBlur * EffectFactory::CreateDualKawaseBlurEffect() {
 
 ILiquifyEffect * EffectFactory::CreateLiquifyEffect() {
     return new LiquifyEffect(m_pGpuDevice);
+}
+
+IEmbossFilter * EffectFactory::CreateEmbossFilter() {
+    return new EmbossFilter(m_pGpuDevice);
 }
 
 USING_RENDER_NAMESPACE_END

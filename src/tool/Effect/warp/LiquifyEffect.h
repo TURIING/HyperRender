@@ -25,8 +25,8 @@ private:
     LiquifyImagePass* m_pLiquifyImagePass = nullptr;
     std::vector<HyperGpu::Image2D*> m_vecLiquifyImage;
     HyperGpu::Sampler* m_pLinearSampler = nullptr;
-    PointI m_newMousePos;
-    PointI m_oldMousePos;
+    PointI m_newMousePos{};
+    PointI m_oldMousePos{};
     bool m_isPressed = false;
     bool m_isFirstFrame = false;
 };
