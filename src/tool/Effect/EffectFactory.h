@@ -18,6 +18,7 @@ public:
     NODISCARD ILiquifyEffect * CreateLiquifyEffect() override;
     NODISCARD IEmbossFilter * CreateEmbossFilter() override;
     NODISCARD IGaussianBlur * CreateGaussianBlur() override;
+    NODISCARD IShadowEffect * CreateShadowEffect() override;
 
 private:
     HyperGpu::GpuDevice* m_pGpuDevice = nullptr;

@@ -1,18 +1,17 @@
 //
-// Created by turiing on 2025/12/5.
+// Created by turiing on 2025/12/7.
 //
 
-#include "EmbossFilterPass.h"
-
-#include "../../../shader/vulkan/EmbossFilterPass/EMBOSS_FILTER_PASS_VERT.h"
-#include "../../../shader/vulkan/EmbossFilterPass/EMBOSS_FILTER_PASS_FRAG.h"
+#include "ShadowEffectPass.h"
+#include "../../../shader/vulkan/common/COMMON_RECTANGLE_PASS_VERT.h"
+#include "../../../shader/vulkan/ShadowEffectPass/SHADOW_EFFECT_PASS_FRAG.h"
 
 #if OPENGL_DESKTOP
-#include "../../../shader/gl/EmbossFilterPass/EMBOSS_FILTER_PASS_VERT.h"
-#include "../../../shader/gl/EmbossFilterPass/EMBOSS_FILTER_PASS_FRAG.h"
+#include "../../../shader/gl/common/COMMON_RECTANGLE_PASS_VERT.h"
+#include "../../../shader/gl/ShadowEffectPass/SHADOW_EFFECT_PASS_FRAG.h"
 #else
-#include "../../../shader/gles/EmbossFilterPass/EMBOSS_FILTER_PASS_VERT.h"
-#include "../../../shader/gles/EmbossFilterPass/EMBOSS_FILTER_PASS_FRAG.h"
+#include "../../../shader/gles/common/COMMON_RECTANGLE_PASS_VERT.h"
+#include "../../../shader/gles/ShadowEffectPass/SHADOW_EFFECT_PASS_FRAG.h"
 #endif
 
 #include "../../../common/GpuHelper.h"
@@ -36,16 +35,16 @@ static std::vector<Vertex> gVertexData = {
     {{1.0f, 1.0f}, {1.0f, 1.0f}},   // 右上角
 };
 
-EmbossFilterPass::EmbossFilterPass(HyperGpu::GpuDevice *pDevice): BasePass(pDevice) {
+ShadowEffectPass::ShadowEffectPass(HyperGpu::GpuDevice *pGpuDevice): BasePass(pGpuDevice) {
     HyperGpu::RenderEnvInfo envInfo;
     envInfo.shaderInfo = HyperGpu::ShaderInfo{
-        .pSpvVertexCode	   = EMBOSS_FILTER_PASS_VERT_SPV.data(),
-        .spvVertexCodeSize = EMBOSS_FILTER_PASS_VERT_SPV.size(),
-        .pSpvFragCode	   = EMBOSS_FILTER_PASS_FRAG_SPV.data(),
-        .spvFragCodeSize = EMBOSS_FILTER_PASS_FRAG_SPV.size(),
+        .pSpvVertexCode	   = COMMON_RECTANGLE_PASS_VERT_SPV.data(),
+        .spvVertexCodeSize = COMMON_RECTANGLE_PASS_VERT_SPV.size(),
+        .pSpvFragCode	   = SHADOW_EFFECT_PASS_FRAG_SPV.data(),
+        .spvFragCodeSize = SHADOW_EFFECT_PASS_FRAG_SPV.size(),
 
-        .pGlVertexCode = EMBOSS_FILTER_PASS_VERT_STR,
-        .pGlFragCode = EMBOSS_FILTER_PASS_FRAG_STR,
+        .pGlVertexCode = COMMON_RECTANGLE_PASS_VERT_STR,
+        .pGlFragCode = SHADOW_EFFECT_PASS_FRAG_STR,
     };
     envInfo.rasterInfo = HyperGpu::RasterizationInfo{
         .primitiveType = HyperGpu::PrimitiveType::TRIANGLE_STRIP,
@@ -62,7 +61,7 @@ EmbossFilterPass::EmbossFilterPass(HyperGpu::GpuDevice *pDevice): BasePass(pDevi
             .storeOp = HyperGpu::AttachmentStoreOp::STORE,
         }
     };
-    envInfo.objName = "EmbossFilterPass";
+    envInfo.objName = "ShadowEffectPass";
     m_pPipeline = m_pGpuDevice->GetPipelineManager()->CreateGraphicPipeline(envInfo);
 
     HyperGpu::InputAssemblerInfo inputAssemblerInfo;
@@ -76,22 +75,23 @@ EmbossFilterPass::EmbossFilterPass(HyperGpu::GpuDevice *pDevice): BasePass(pDevi
     m_pLocalInfoBuffer = GpuHelper::CreateUniformBuffer(m_pGpuDevice, sizeof(LocalInfo));
 }
 
-EmbossFilterPass::~EmbossFilterPass() {
+ShadowEffectPass::~ShadowEffectPass() {
     m_pLocalInfoBuffer->SubRef();
 }
 
-void EmbossFilterPass::SetTargetImage(HyperGpu::Image2D *pImage) {
-    UpdateImageBinding("uTex", pImage);
-}
-
-void EmbossFilterPass::SetLocalInfo(float azimuth, float elevation, float bumpHeight, bool useGray) {
+void ShadowEffectPass::SetLocalInfo(const Offset2D &offset) {
     LocalInfo info{};
-    info.azimuth = glm::radians(azimuth);
-    info.elevation = glm::radians(elevation);
-    info.bumpHeight = bumpHeight;
-    info.useGray = useGray ? 1 : 0;
+    info.offset = { offset.x, offset.y };
     m_pLocalInfoBuffer->WriteData(&info, sizeof(LocalInfo));
     UpdateBufferBinding("localInfo", m_pLocalInfoBuffer);
+}
+
+void ShadowEffectPass::SetTargetImage(HyperGpu::Image2D *pImage) {
+    UpdateImageBinding("targetTex", pImage);
+}
+
+void ShadowEffectPass::SetAlphaMask(HyperGpu::Image2D *pImage) {
+    UpdateImageBinding("alphaTex", pImage);
 }
 
 USING_RENDER_NAMESPACE_END

@@ -3,6 +3,8 @@
 //
 
 #include "EffectFactory.h"
+
+#include "ShadowEffect.h"
 #include "blur/DualKawaseBlurEffect.h"
 #include "blur/GaussianBlurEffect.h"
 #include "filter/EmbossFilter.h"
@@ -31,6 +33,10 @@ IEmbossFilter * EffectFactory::CreateEmbossFilter() {
 
 IGaussianBlur * EffectFactory::CreateGaussianBlur() {
     return new GaussianBlurEffect(m_pGpuDevice);
+}
+
+IShadowEffect * EffectFactory::CreateShadowEffect() {
+    return new ShadowEffect(m_pGpuDevice);
 }
 
 USING_RENDER_NAMESPACE_END

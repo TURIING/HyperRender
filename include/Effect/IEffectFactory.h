@@ -10,6 +10,7 @@
 #include "blur/IGaussianBlur.h"
 #include "warp/ILiquifyEffect.h"
 #include "filter/IEmbossFilter.h"
+#include "IShadowEffect.h"
 
 namespace HyperRender {
     class IEffectFactory: public RenderObject {
@@ -18,6 +19,7 @@ namespace HyperRender {
         virtual ILiquifyEffect* CreateLiquifyEffect() = 0;
         virtual IEmbossFilter* CreateEmbossFilter() = 0;
         virtual IGaussianBlur* CreateGaussianBlur() = 0;
+        virtual IShadowEffect* CreateShadowEffect() = 0;
     };
 }
 #endif //IEFFECTFACTORY_H
