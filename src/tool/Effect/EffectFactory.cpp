@@ -4,6 +4,7 @@
 
 #include "EffectFactory.h"
 #include "blur/DualKawaseBlurEffect.h"
+#include "blur/GaussianBlurEffect.h"
 #include "filter/EmbossFilter.h"
 #include "warp/LiquifyEffect.h"
 
@@ -26,6 +27,10 @@ ILiquifyEffect * EffectFactory::CreateLiquifyEffect() {
 
 IEmbossFilter * EffectFactory::CreateEmbossFilter() {
     return new EmbossFilter(m_pGpuDevice);
+}
+
+IGaussianBlur * EffectFactory::CreateGaussianBlur() {
+    return new GaussianBlurEffect(m_pGpuDevice);
 }
 
 USING_RENDER_NAMESPACE_END

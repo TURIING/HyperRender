@@ -5,19 +5,19 @@
 #include "DualKawaseBlurUpSamplePass.h"
 
 
-#include "../../shader/vulkan/DualKawaseBlurUpSamplePass/DUAL_KAWASE_BLUR_UP_SAMPLE_PASS_FRAG.h"
-#include "../../shader/vulkan/DualKawaseBlurUpSamplePass/DUAL_KAWASE_BLUR_UP_SAMPLE_PASS_VERT.h"
+#include "../../../shader/vulkan/DualKawaseBlurUpSamplePass/DUAL_KAWASE_BLUR_UP_SAMPLE_PASS_FRAG.h"
+#include "../../../shader/vulkan/DualKawaseBlurUpSamplePass/DUAL_KAWASE_BLUR_UP_SAMPLE_PASS_VERT.h"
 
 #if OPENGL_DESKTOP
-#include "../../shader/gl/DualKawaseBlurUpSamplePass/DUAL_KAWASE_BLUR_UP_SAMPLE_PASS_VERT.h"
-#include "../../shader/gl/DualKawaseBlurUpSamplePass/DUAL_KAWASE_BLUR_UP_SAMPLE_PASS_FRAG.h"
+#include "../../../shader/gl/DualKawaseBlurUpSamplePass/DUAL_KAWASE_BLUR_UP_SAMPLE_PASS_VERT.h"
+#include "../../../shader/gl/DualKawaseBlurUpSamplePass/DUAL_KAWASE_BLUR_UP_SAMPLE_PASS_FRAG.h"
 #else
 #include "../../shader/gles/DualKawaseBlurUpSamplePass/DUAL_KAWASE_BLUR_UP_SAMPLE_PASS_VERT.h"
 #include "../../shader/gles/DualKawaseBlurUpSamplePass/DUAL_KAWASE_BLUR_UP_SAMPLE_PASS_FRAG.h"
 #endif
 
 #include "GpuPipeline.h"
-#include "../../common/GpuHelper.h"
+#include "../../../common/GpuHelper.h"
 
 USING_RENDER_NAMESPACE_BEGIN
 struct Vertex {

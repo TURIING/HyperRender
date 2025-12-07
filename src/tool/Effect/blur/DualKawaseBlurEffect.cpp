@@ -3,8 +3,8 @@
 //
 
 #include "DualKawaseBlurEffect.h"
-#include "../../../pass/effect/DualKawaseBlurDownSamplePass.h"
-#include "../../../pass/effect/DualKawaseBlurUpSamplePass.h"
+#include "../../../pass/effect/blur/DualKawaseBlurDownSamplePass.h"
+#include "../../../pass/effect/blur/DualKawaseBlurUpSamplePass.h"
 #include "../../../common/GpuHelper.h"
 
 USING_RENDER_NAMESPACE_BEGIN

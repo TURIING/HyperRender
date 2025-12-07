@@ -2,23 +2,23 @@
 // Created by turiing on 2025/8/20.
 //
 
-#ifndef DUALKAWASEBLURDOWNSAMPLEPASS_H
-#define DUALKAWASEBLURDOWNSAMPLEPASS_H
+#ifndef DUALKAWASEBLURUPSAMPLEPASS_H
+#define DUALKAWASEBLURUPSAMPLEPASS_H
 
-#include "../../common/common.h"
-#include "../BasePass.h"
+#include "../../../common/common.h"
+#include "../../BasePass.h"
 
 USING_RENDER_NAMESPACE_BEGIN
 
-class DualKawaseBlurDownSamplePass : public BasePass {
+class DualKawaseBlurUpSamplePass : public BasePass {
     struct LocalInfo {
         alignas(8) glm::vec2 iResolution;
         alignas(8) glm::vec2 offset;
     };
 
 public:
-    explicit DualKawaseBlurDownSamplePass(HyperGpu::GpuDevice* gpuDevice);
-    ~DualKawaseBlurDownSamplePass() override;
+    explicit DualKawaseBlurUpSamplePass(HyperGpu::GpuDevice* gpuDevice);
+    ~DualKawaseBlurUpSamplePass() override;
     void SetTargetTexture(HyperGpu::Image2D* targetTexture);
     void Draw(HyperGpu::GpuCmd *pCmd, int order);
     void SetScreenSize(const Size &size);
@@ -34,4 +34,4 @@ private:
 
 USING_RENDER_NAMESPACE_END
 
-#endif //DUALKAWASEBLURDOWNSAMPLEPASS_H
+#endif //DUALKAWASEBLURUPSAMPLEPASS_H
