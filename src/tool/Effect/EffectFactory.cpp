@@ -9,9 +9,10 @@
 #include "blur/GaussianBlurEffect.h"
 #include "filter/EmbossFilter.h"
 #include "warp/LiquifyEffect.h"
+#include "warp/SwirlWarpEffect.h"
 
 USING_RENDER_NAMESPACE_BEGIN
-EffectFactory::EffectFactory(HyperGpu::GpuDevice *pGpuDevice): m_pGpuDevice(pGpuDevice) {
+    EffectFactory::EffectFactory(HyperGpu::GpuDevice *pGpuDevice): m_pGpuDevice(pGpuDevice) {
     m_pGpuDevice->AddRef();
 }
 
@@ -37,6 +38,14 @@ IGaussianBlur * EffectFactory::CreateGaussianBlur() {
 
 IShadowEffect * EffectFactory::CreateShadowEffect() {
     return new ShadowEffect(m_pGpuDevice);
+}
+
+IExposureFilter * EffectFactory::CreateExposureFilter() {
+    return nullptr;
+}
+
+ISwirlWarpEffect * EffectFactory::CreateSwirlWarpEffect() {
+    return new SwirlWarpEffect(m_pGpuDevice);
 }
 
 USING_RENDER_NAMESPACE_END

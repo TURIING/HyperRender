@@ -19,6 +19,8 @@ public:
     NODISCARD IEmbossFilter * CreateEmbossFilter() override;
     NODISCARD IGaussianBlur * CreateGaussianBlur() override;
     NODISCARD IShadowEffect * CreateShadowEffect() override;
+    NODISCARD IExposureFilter * CreateExposureFilter() override;
+    NODISCARD ISwirlWarpEffect* CreateSwirlWarpEffect() override;
 
 private:
     HyperGpu::GpuDevice* m_pGpuDevice = nullptr;

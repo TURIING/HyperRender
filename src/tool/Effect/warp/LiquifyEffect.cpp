@@ -3,8 +3,8 @@
 //
 
 #include "LiquifyEffect.h"
-#include "../../../pass/effect/LiquifyMainPass.h"
-#include "../../../pass/effect/LiquifyImagePass.h"
+#include "../../../pass/effect/warp/LiquifyMainPass.h"
+#include "../../../pass/effect/warp/LiquifyImagePass.h"
 #include "../../../common/GpuHelper.h"
 
 USING_RENDER_NAMESPACE_BEGIN

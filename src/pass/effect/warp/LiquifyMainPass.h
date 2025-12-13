@@ -5,8 +5,8 @@
 #ifndef LIQUIFYMAINPASS_H
 #define LIQUIFYMAINPASS_H
 
-#include "../../common/common.h"
-#include "../BasePass.h"
+#include "../../../common/common.h"
+#include "../../BasePass.h"
 
 USING_RENDER_NAMESPACE_BEGIN
 class LiquifyMainPass final : public BasePass {

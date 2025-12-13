@@ -2,20 +2,20 @@
 // Created by turiing on 2025/11/22.
 //
 
-#include "LiquifyImagePass.h"
-#include "../../shader/vulkan/LiquifyPass/LIQUIFY_IMAGE_PASS_VERT.h"
-#include "../../shader/vulkan/LiquifyPass/LIQUIFY_IMAGE_PASS_FRAG.h"
+#include "../warp/LiquifyImagePass.h"
+#include "../../../shader/vulkan/LiquifyPass/LIQUIFY_IMAGE_PASS_VERT.h"
+#include "../../../shader/vulkan/LiquifyPass/LIQUIFY_IMAGE_PASS_FRAG.h"
 
 #if OPENGL_DESKTOP
-#include "../../shader/gl/LiquifyPass/LIQUIFY_IMAGE_PASS_VERT.h"
-#include "../../shader/gl/LiquifyPass/LIQUIFY_IMAGE_PASS_FRAG.h"
+#include "../../../shader/gl/LiquifyPass/LIQUIFY_IMAGE_PASS_VERT.h"
+#include "../../../shader/gl/LiquifyPass/LIQUIFY_IMAGE_PASS_FRAG.h"
 #else
 #include "../../shader/gles/LiquifyPass/LIQUIFY_IMAGE_PASS_VERT.h"
 #include "../../shader/gles/LiquifyPass/LIQUIFY_IMAGE_PASS_FRAG.h"
 #endif
-#include "LiquifyImagePass.h"
+#include "../warp/LiquifyImagePass.h"
 
-#include "../../common/GpuHelper.h"
+#include "../../../common/GpuHelper.h"
 
 USING_RENDER_NAMESPACE_BEGIN
 struct Vertex {

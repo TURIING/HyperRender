@@ -9,7 +9,9 @@
 #include "blur/IDualKawaseBlur.h"
 #include "blur/IGaussianBlur.h"
 #include "warp/ILiquifyEffect.h"
+#include "warp/ISwirlWarpEffect.h"
 #include "filter/IEmbossFilter.h"
+#include "filter/IExposureFilter.h"
 #include "IShadowEffect.h"
 
 namespace HyperRender {
@@ -20,6 +22,8 @@ namespace HyperRender {
         virtual IEmbossFilter* CreateEmbossFilter() = 0;
         virtual IGaussianBlur* CreateGaussianBlur() = 0;
         virtual IShadowEffect* CreateShadowEffect() = 0;
+        virtual IExposureFilter* CreateExposureFilter() = 0;
+        virtual ISwirlWarpEffect* CreateSwirlWarpEffect() = 0;
     };
 }
 #endif //IEFFECTFACTORY_H

@@ -5,8 +5,8 @@
 #ifndef LIQUIFYIMAGEPASS_H
 #define LIQUIFYIMAGEPASS_H
 
-#include "../../common/common.h"
-#include "../BasePass.h"
+#include "../../../common/common.h"
+#include "../../BasePass.h"
 
 USING_RENDER_NAMESPACE_BEGIN
 class LiquifyImagePass final : public BasePass {
